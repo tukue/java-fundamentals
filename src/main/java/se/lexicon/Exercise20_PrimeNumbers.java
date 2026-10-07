@@ -5,7 +5,7 @@ public class Exercise20_PrimeNumbers {
         if (n <= 1) {
             return false;
         }
-        for (int i = 2; i <= Math.sqrt(n); i++) {
+        for (var i = 2; i <= Math.sqrt(n); i++) {
             if (n % i == 0) {
                 return false;
             }
@@ -14,8 +14,8 @@ public class Exercise20_PrimeNumbers {
     }
 
     public static void main(String[] args) {
-        boolean first = true;
-        for (int i = 2; i <= 50; i++) {
+        var first = true;
+        for (var i = 2; i <= 50; i++) {
             if (isPrime(i)) {
                 if (!first) {
                     System.out.print(" ");

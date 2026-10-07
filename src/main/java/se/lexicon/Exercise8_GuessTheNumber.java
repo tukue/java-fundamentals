@@ -5,16 +5,15 @@ import java.util.Scanner;
 
 public class Exercise8_GuessTheNumber {
     public static void main(String[] args) {
-        Random random = new Random();
-        int secretNumber = random.nextInt(500) + 1; // 1 to 500
-        Scanner scanner = new Scanner(System.in);
+        var random = new Random();
+        var secretNumber = random.nextInt(500) + 1;
 
-        int guesses = 0;
-        int guess;
+        var scanner = new Scanner(System.in);
+        var guesses = 0;
 
         do {
             System.out.print("Enter your guess: ");
-            guess = scanner.nextInt();
+            var guess = scanner.nextInt();
             guesses++;
 
             if (guess < secretNumber) {

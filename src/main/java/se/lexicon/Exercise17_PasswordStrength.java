@@ -6,19 +6,19 @@ public class Exercise17_PasswordStrength {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter password: ");
-        String password = scanner.next();
+        var password = scanner.next();
 
-        int ruleCount = 0;
+        var ruleCount = 0;
 
         if (password.length() >= 8) {
             ruleCount++;
         }
 
-        boolean hasUppercase = false;
-        boolean hasDigit = false;
+        var hasUppercase = false;
+        var hasDigit = false;
 
-        for (int i = 0; i < password.length(); i++) {
-            char ch = password.charAt(i);
+        for (var i = 0; i < password.length(); i++) {
+            var ch = password.charAt(i);
             if (ch >= 'A' && ch <= 'Z') {
                 hasUppercase = true;
             }
@@ -30,14 +30,11 @@ public class Exercise17_PasswordStrength {
         if (hasUppercase) ruleCount++;
         if (hasDigit) ruleCount++;
 
-        String rating;
-        if (ruleCount == 3) {
-            rating = "Strong";
-        } else if (ruleCount == 2) {
-            rating = "Medium";
-        } else {
-            rating = "Weak";
-        }
+        var rating = switch (ruleCount) {
+            case 3 -> "Strong";
+            case 2 -> "Medium";
+            default -> "Weak";
+        };
 
         System.out.println("Rules met: " + ruleCount + "/3");
         System.out.println("Rating: " + rating);

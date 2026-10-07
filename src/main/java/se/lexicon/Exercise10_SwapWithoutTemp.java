@@ -2,8 +2,8 @@ package se.lexicon;
 
 public class Exercise10_SwapWithoutTemp {
     public static void main(String[] args) {
-        int a = 15;
-        int b = 42;
+        var a = 15;
+        var b = 42;
 
         System.out.println("Before: a = " + a + ", b = " + b);
 
