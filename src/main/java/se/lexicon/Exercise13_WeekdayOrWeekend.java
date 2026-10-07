@@ -11,7 +11,7 @@ public class Exercise13_WeekdayOrWeekend {
         var result = switch (day) {
             case "Monday", "Tuesday", "Wednesday", "Thursday", "Friday" -> "Weekday";
             case "Saturday", "Sunday" -> "Weekend";
-            default -> "Unknown day";
+            default -> "Hmm, I'm not sure about that day";
         };
 
         System.out.println(result);

@@ -25,15 +25,15 @@ class Exercise13_WeekdayOrWeekendTest {
     }
 
     @Test
-    void unknownDay_returnsUnknownDay() {
-        assertEquals("Unknown day", weekDayOrWeekend("Blursday"));
+    void unknownDay_returnsNotSure() {
+        assertEquals("Hmm, I'm not sure about that day", weekDayOrWeekend("everyday"));
     }
 
     private String weekDayOrWeekend(String day) {
         return switch (day) {
             case "Monday", "Tuesday", "Wednesday", "Thursday", "Friday" -> "Weekday";
             case "Saturday", "Sunday" -> "Weekend";
-            default -> "Unknown day";
+            default -> "Hmm, I'm not sure about that day";
         };
     }
 }
