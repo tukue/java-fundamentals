@@ -14,20 +14,20 @@ public class Exercise17_PasswordStrength {
             ruleCount++;
         }
 
-        var hasUppercase = false;
+        var hasLetter = false;
         var hasDigit = false;
 
         for (var i = 0; i < password.length(); i++) {
             var ch = password.charAt(i);
-            if (ch >= 'A' && ch <= 'Z') {
-                hasUppercase = true;
+            if ((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z')) {
+                hasLetter = true;
             }
             if (ch >= '0' && ch <= '9') {
                 hasDigit = true;
             }
         }
 
-        if (hasUppercase) ruleCount++;
+        if (hasLetter) ruleCount++;
         if (hasDigit) ruleCount++;
 
         var rating = switch (ruleCount) {

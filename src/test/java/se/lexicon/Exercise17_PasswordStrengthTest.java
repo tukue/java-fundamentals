@@ -31,14 +31,14 @@ class Exercise17_PasswordStrengthTest {
     private int rulesMet(String password) {
         var count = 0;
         if (password.length() >= 8) count++;
-        var hasUpper = false;
+        var hasLetter = false;
         var hasDigit = false;
         for (var i = 0; i < password.length(); i++) {
             var ch = password.charAt(i);
-            if (ch >= 'A' && ch <= 'Z') hasUpper = true;
+            if ((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z')) hasLetter = true;
             if (ch >= '0' && ch <= '9') hasDigit = true;
         }
-        if (hasUpper) count++;
+        if (hasLetter) count++;
         if (hasDigit) count++;
         return count;
     }

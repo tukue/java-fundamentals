@@ -50,11 +50,11 @@ class Exercise12_GradeCalculatorTest {
     }
 
     private String grade(int score) {
-        return score >= 90 && score <= 100 ? "A"
+        return score < 0 || score > 100 ? "Invalid score"
+                : score >= 90 ? "A"
                 : score >= 80 ? "B"
                 : score >= 70 ? "C"
                 : score >= 60 ? "D"
-                : score >= 0 ? "F"
-                : "Invalid score";
+                : "F";
     }
 }

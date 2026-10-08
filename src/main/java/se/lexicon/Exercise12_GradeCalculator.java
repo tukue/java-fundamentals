@@ -8,12 +8,12 @@ public class Exercise12_GradeCalculator {
         System.out.print("Enter score: ");
         var score = scanner.nextInt();
 
-        var grade = score >= 90 && score <= 100 ? "A"
+        var grade = score < 0 || score > 100 ? "Invalid score"
+                : score >= 90 ? "A"
                 : score >= 80 ? "B"
                 : score >= 70 ? "C"
                 : score >= 60 ? "D"
-                : score >= 0 ? "F"
-                : "Invalid score";
+                : "F";
 
         if (score >= 0 && score <= 100) {
             System.out.println("Grade: " + grade);
