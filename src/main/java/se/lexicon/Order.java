@@ -54,24 +54,37 @@ public class Order {
         total = subtotal - discountAmount + vat;
     }
 
+    public void calculateTotals() {
+        calculateSubtotal();
+        calculateDiscount();
+        calculateVAT();
+        calculateTotal();
+    }
+
     public double getTotal() {
         return total;
     }
 
-    public void printReceipt() {
-        System.out.println("==============================");
-        System.out.println("      LEXICON CAFE");
-        System.out.println("==============================");
-        System.out.printf("Customer  : %s%n", customerName);
-        System.out.printf("Item      : %s x %d%n", itemName, quantity);
-        System.out.printf("Subtotal  : %.2f SEK%n", subtotal);
+    public String formatReceipt() {
+        var sb = new StringBuilder();
+        sb.append("==============================\n");
+        sb.append("      LEXICON CAFE\n");
+        sb.append("==============================\n");
+        sb.append(String.format("Customer  : %s%n", customerName));
+        sb.append(String.format("Item      : %s x %d%n", itemName, quantity));
+        sb.append(String.format("Subtotal  : %.2f SEK%n", subtotal));
         if (discountAmount > 0) {
-            System.out.printf("Discount  : -%.2f SEK%n", discountAmount);
+            sb.append(String.format("Discount  : -%.2f SEK%n", discountAmount));
         }
-        System.out.printf("VAT       : %.2f SEK%n", vat);
-        System.out.println("------------------------------");
-        System.out.printf("TOTAL     : %.2f SEK%n", total);
-        System.out.println("   Thank you, " + customerName + "!");
-        System.out.println("   See you next time.");
+        sb.append(String.format("VAT       : %.2f SEK%n", vat));
+        sb.append("------------------------------\n");
+        sb.append(String.format("TOTAL     : %.2f SEK%n", total));
+        sb.append("   Thank you, " + customerName + "!\n");
+        sb.append("   See you next time.\n");
+        return sb.toString();
+    }
+
+    public void printReceipt() {
+        System.out.print(formatReceipt());
     }
 }
