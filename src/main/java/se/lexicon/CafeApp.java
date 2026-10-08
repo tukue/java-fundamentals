@@ -6,7 +6,6 @@ public class CafeApp {
 
     private static final Scanner SCANNER = new Scanner(System.in);
 
-    // Menu items: number, name, price
     private static final String[][] MENU = {
             {"1", "Espresso", "25.00"},
             {"2", "Cappuccino", "35.00"},
@@ -16,13 +15,34 @@ public class CafeApp {
     };
 
     public static void main(String[] args) {
-        System.out.print("Welcome! What is your name? ");
-        var name = SCANNER.nextLine();
+        var totalRevenue = 0.0;
+        var customersServed = 0;
 
-        System.out.println("\nHi " + name + "! Here is our menu:");
-        printMenu();
+        while (true) {
+            System.out.print("Welcome! What is your name (or 'done' to close): ");
+            var name = SCANNER.nextLine();
 
-        var isMember = isLoyaltyMember();
+            if (name.trim().toLowerCase().equals("done")) {
+                printEndOfDayReport(customersServed, totalRevenue);
+                break;
+            }
+
+            System.out.println("\nHi " + name + "! Here is our menu:");
+            printMenu();
+
+            var isMember = isLoyaltyMember();
+            var customerSubtotal = processCustomerOrder(isMember);
+
+            totalRevenue += customerSubtotal;
+            customersServed++;
+
+            System.out.println("\n   Thank you, " + name + "!");
+            System.out.println("   See you next time.");
+        }
+    }
+
+    private static double processCustomerOrder(boolean isMember) {
+        var subtotal = 0.0;
 
         while (true) {
             System.out.print("\nEnter item number (1-5, or 0 to finish): ");
@@ -40,7 +60,8 @@ public class CafeApp {
             }
 
             var price = Double.parseDouble(item[2]);
-            var subtotal = price * quantity;
+            var itemSubtotal = price * quantity;
+            subtotal += itemSubtotal;
 
             var discountPercent = calculateDiscountPercent(isMember, subtotal);
             var discountAmount = subtotal * discountPercent;
@@ -49,15 +70,9 @@ public class CafeApp {
             var total = afterDiscount + vat;
 
             printReceipt(name, item[1], quantity, price, subtotal, discountAmount, vat, total);
-
-            System.out.print("\nNext item number (1-5, or 0 to finish for this customer): ");
-            itemNum = SCANNER.nextInt();
-            if (itemNum == 0) {
-                System.out.println("\n   Thank you, " + name + "!");
-                System.out.println("   See you next time.");
-                break;
-            }
         }
+
+        return subtotal;
     }
 
     private static void printMenu() {
@@ -113,7 +128,14 @@ public class CafeApp {
         System.out.printf("VAT       : %.2f SEK%n", vat);
         System.out.println("------------------------------");
         System.out.printf("TOTAL     : %.2f SEK%n", total);
-        System.out.println("   Thank you, " + customer + "!");
-        System.out.println("   See you next time.");
+    }
+
+    private static void printEndOfDayReport(int customersServed, double totalRevenue) {
+        System.out.println("==============================");
+        System.out.println("      END OF DAY REPORT");
+        System.out.println("==============================");
+        System.out.printf("Customers served : %d%n", customersServed);
+        System.out.printf("Total revenue    : %.2f SEK%n", totalRevenue);
+        System.out.println("==============================");
     }
 }
