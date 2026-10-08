@@ -23,7 +23,7 @@ public class CafeApp {
             var name = SCANNER.nextLine();
 
             if (name.trim().toLowerCase().equals("done")) {
-                printEndOfDayReport(customersServed, totalRevenue);
+                printDailyReport(customersServed, totalRevenue);
                 break;
             }
 
@@ -113,9 +113,9 @@ public class CafeApp {
         System.out.println("==============================");
     }
 
-    private static void printEndOfDayReport(int customersServed, double totalRevenue) {
+    private static void printDailyReport(int customersServed, double totalRevenue) {
         System.out.println("==============================");
-        System.out.println("      END OF DAY REPORT");
+        System.out.println("       DAILY REPORT");
         System.out.println("==============================");
         System.out.printf("Customers served : %d%n", customersServed);
         System.out.printf("Total revenue    : %.2f SEK%n", totalRevenue);
