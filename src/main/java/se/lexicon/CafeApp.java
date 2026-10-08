@@ -1,5 +1,6 @@
 package se.lexicon;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class CafeApp {
@@ -45,13 +46,14 @@ public class CafeApp {
         var subtotal = 0.0;
 
         while (true) {
-            System.out.print("\nEnter item number (1-5, or 0 to finish): ");
-            var itemNum = SCANNER.nextInt();
+            var itemNum = getValidItemNumber();
             if (itemNum == 0) break;
 
-            System.out.print("How many? ");
-            var quantity = SCANNER.nextInt();
-            SCANNER.nextLine(); // consume newline
+            var quantity = getValidQuantity();
+            if (quantity <= 0) {
+                System.out.println("Quantity must be greater than 0. Try again.");
+                continue;
+            }
 
             var item = getItemByNumber(itemNum);
             if (item == null) {
@@ -75,14 +77,36 @@ public class CafeApp {
         return subtotal;
     }
 
-    private static void printMenu() {
-        System.out.println("==============================");
-        System.out.println("       Lexicon Cafe");
-        System.out.println("==============================");
-        for (var row : MENU) {
-            System.out.printf("%-2s. %-12s %.2f SEK%n", row[0], row[1], Double.parseDouble(row[2]));
+    private static int getValidItemNumber() {
+        while (true) {
+            System.out.print("\nEnter item number (1-5, or 0 to finish): ");
+            if (SCANNER.hasNextInt()) {
+                var num = SCANNER.nextInt();
+                SCANNER.nextLine(); // consume newline
+                if (num >= 0 && num <= 5) {
+                    return num;
+                }
+            } else {
+                SCANNER.nextLine(); // discard invalid input
+            }
+            System.out.println("Invalid input. Please enter a number between 0 and 5.");
         }
-        System.out.println("==============================");
+    }
+
+    private static int getValidQuantity() {
+        while (true) {
+            System.out.print("How many? ");
+            if (SCANNER.hasNextInt()) {
+                var num = SCANNER.nextInt();
+                SCANNER.nextLine(); // consume newline
+                if (num > 0) {
+                    return num;
+                }
+            } else {
+                SCANNER.nextLine(); // discard invalid input
+            }
+            System.out.println("Invalid quantity. Please enter a positive number.");
+        }
     }
 
     private static boolean isLoyaltyMember() {
