@@ -42,9 +42,9 @@ public class CafeGuiApp extends Application {
 
         var root = new BorderPane();
         root.setPadding(new Insets(10));
-        root.setTop(createHeader());
-        root.setCenter(createCenter());
-        root.setBottom(createStatusBar());
+        root.setTop(buildHeader());
+        root.setCenter(buildCenter());
+        root.setBottom(buildStatusBar());
 
         var scene = new Scene(root, 960, 640);
         stage.setTitle("Lexicon Cafe");
@@ -77,29 +77,29 @@ public class CafeGuiApp extends Application {
         updateStatus();
     }
 
-    private VBox createHeader() {
+    private VBox buildHeader() {
         var title = new Label("LEXICON CAFE");
         title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
         greetingLabel.setStyle("-fx-font-size: 14px;");
         return new VBox(5, title, greetingLabel);
     }
 
-    private HBox createCenter() {
-        var formSection = createFormSection();
-        var center = new HBox(20, createMenuSection(), formSection, createReceiptSection());
+    private HBox buildCenter() {
+        var formSection = buildOrderForm();
+        var center = new HBox(20, buildMenu(), formSection, buildReceipt());
         HBox.setHgrow(formSection, Priority.ALWAYS);
         return center;
     }
 
-    private VBox createMenuSection() {
-        var label = sectionLabel("Menu");
+    private VBox buildMenu() {
+        var label = buildSectionLabel("Menu");
         var section = new VBox(5, label, menuList);
         VBox.setVgrow(menuList, Priority.ALWAYS);
         return section;
     }
 
-    private VBox createFormSection() {
-        var label = sectionLabel("Order");
+    private VBox buildOrderForm() {
+        var label = buildSectionLabel("Order");
 
         var grid = new GridPane();
         grid.setHgap(10);
@@ -130,22 +130,22 @@ public class CafeGuiApp extends Application {
         return new VBox(10, label, grid);
     }
 
-    private VBox createReceiptSection() {
-        var label = sectionLabel("Receipt");
+    private VBox buildReceipt() {
+        var label = buildSectionLabel("Receipt");
         var section = new VBox(5, label, receiptArea);
         VBox.setVgrow(receiptArea, Priority.ALWAYS);
         section.setPrefWidth(360);
         return section;
     }
 
-    private HBox createStatusBar() {
+    private HBox buildStatusBar() {
         statusLabel.setFont(Font.font("Monospaced", 13));
         var bar = new HBox(statusLabel);
         bar.setPadding(new Insets(8, 0, 0, 0));
         return bar;
     }
 
-    private Label sectionLabel(String text) {
+    private Label buildSectionLabel(String text) {
         var label = new Label(text);
         label.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
         return label;
