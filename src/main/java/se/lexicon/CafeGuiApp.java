@@ -195,6 +195,13 @@ public class CafeGuiApp extends Application {
         nameField.requestFocus();
     }
 
+    void reset() {
+        handleNewCustomer();
+        customersServed = 0;
+        totalRevenue = 0;
+        updateStatus();
+    }
+
     private void handleEndOfDay() {
         var confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("End of Day");

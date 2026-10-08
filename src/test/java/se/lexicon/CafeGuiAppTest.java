@@ -3,8 +3,8 @@ package se.lexicon;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.Callable;
@@ -20,34 +20,16 @@ class CafeGuiAppTest {
 
     private static final long FX_TIMEOUT = 10;
 
-    private RecordingApp app;
-    private Stage stage;
+    private static RecordingApp app;
+    private static Stage stage;
 
     @BeforeAll
-    static void startToolkit() throws Exception {
+    static void startToolkitAndBuildWindow() throws Exception {
         var latch = new CountDownLatch(1);
         Platform.startup(latch::countDown);
         assertTrue(latch.await(FX_TIMEOUT, TimeUnit.SECONDS), "JavaFX toolkit failed to start");
         Platform.setImplicitExit(false);
-    }
 
-    @AfterAll
-    static void stopToolkit() {
-        Platform.exit();
-    }
-
-    @AfterEach
-    void closeStage() throws Exception {
-        runFx(() -> {
-            if (stage != null) {
-                stage.close();
-            }
-            stage = null;
-            app = null;
-        });
-    }
-
-    private void launchApp() throws Exception {
         runFx(() -> {
             app = new RecordingApp();
             stage = new Stage();
@@ -55,7 +37,21 @@ class CafeGuiAppTest {
         });
     }
 
-    private void runFx(Runnable action) throws Exception {
+    @AfterAll
+    static void closeWindowAndStopToolkit() throws Exception {
+        runFx(() -> stage.close());
+        Platform.exit();
+    }
+
+    @BeforeEach
+    void resetApp() throws Exception {
+        runFx(() -> {
+            app.reset();
+            app.lastError = null;
+        });
+    }
+
+    private static void runFx(Runnable action) throws Exception {
         var exception = new AtomicReference<RuntimeException>();
         var executed = new CountDownLatch(1);
         Platform.runLater(() -> {
@@ -73,7 +69,7 @@ class CafeGuiAppTest {
         }
     }
 
-    private <T> T computeFx(Callable<T> action) throws Exception {
+    private static <T> T computeFx(Callable<T> action) throws Exception {
         var result = new AtomicReference<T>();
         runFx(() -> {
             try {
@@ -87,7 +83,6 @@ class CafeGuiAppTest {
 
     @Test
     void start_buildsWindowWithMenuAndGreeting() throws Exception {
-        launchApp();
 
         assertEquals(5, computeFx(() -> app.menuList.getItems().size()));
         assertEquals("Welcome! What is your name?", computeFx(() -> app.greetingLabel.getText()));
@@ -98,7 +93,6 @@ class CafeGuiAppTest {
 
     @Test
     void placeOrder_validMemberOrder_updatesReceiptAndStatus() throws Exception {
-        launchApp();
 
         runFx(() -> {
             app.nameField.setText("Test");
@@ -123,7 +117,6 @@ class CafeGuiAppTest {
 
     @Test
     void placeOrder_emptyName_showsErrorAndNoOrder() throws Exception {
-        launchApp();
 
         runFx(() -> {
             app.menuList.getSelectionModel().select(0);
@@ -136,7 +129,6 @@ class CafeGuiAppTest {
 
     @Test
     void placeOrder_noItemSelected_showsError() throws Exception {
-        launchApp();
 
         runFx(() -> {
             app.nameField.setText("Bob");
@@ -149,7 +141,6 @@ class CafeGuiAppTest {
 
     @Test
     void newCustomer_resetsFormButKeepsTotals() throws Exception {
-        launchApp();
 
         runFx(() -> {
             app.nameField.setText("Test");
