@@ -216,18 +216,12 @@ public class CafeGuiApp extends Application {
             return null;
         }
 
-        var quantity = quantitySpinner.getValue();
-        if (quantity < 1) {
-            showError("Quantity must be at least 1.");
-            return null;
-        }
-
         var item = CafeApp.MENU[index];
         var order = new Order();
         order.setCustomerName(name);
         order.setItemName(item[1]);
         order.setUnitPrice(Double.parseDouble(item[2]));
-        order.setQuantity(quantity);
+        order.setQuantity(quantitySpinner.getValue());
         order.setMember(memberBox.isSelected());
         return order;
     }
