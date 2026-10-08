@@ -11,9 +11,10 @@ public class Exercise8_GuessTheNumber {
         var scanner = new Scanner(System.in);
         var guesses = 0;
 
+        var guess = 0;
         do {
             System.out.print("Enter your guess: ");
-            var guess = scanner.nextInt();
+            guess = scanner.nextInt();
             guesses++;
 
             if (guess < secretNumber) {

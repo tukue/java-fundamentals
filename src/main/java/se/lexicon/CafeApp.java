@@ -6,7 +6,7 @@ public class CafeApp {
 
     private static final Scanner SCANNER = new Scanner(System.in);
 
-    private static final String[][] MENU = {
+    static final String[][] MENU = {
             {"1", "Espresso", "25.00"},
             {"2", "Cappuccino", "35.00"},
             {"3", "Latte", "40.00"},
@@ -54,10 +54,7 @@ public class CafeApp {
             order.setQuantity(quantity);
             order.setUnitPrice(price);
 
-            order.calculateSubtotal();
-            order.calculateDiscount();
-            order.calculateVAT();
-            order.calculateTotal();
+            order.calculateTotals();
 
             order.printReceipt();
 
