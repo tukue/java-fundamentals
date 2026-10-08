@@ -16,9 +16,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
@@ -42,9 +40,9 @@ public class CafeGuiApp extends Application {
 
         var root = new BorderPane();
         root.setPadding(new Insets(10));
-        root.setTop(createHeader());
-        root.setCenter(createCenter());
-        root.setBottom(createStatusBar());
+        root.setTop(buildHeader());
+        root.setCenter(buildCenter());
+        root.setBottom(buildStatusBar());
 
         var scene = new Scene(root, 960, 640);
         stage.setTitle("Lexicon Cafe");
@@ -77,42 +75,53 @@ public class CafeGuiApp extends Application {
         updateStatus();
     }
 
-    private VBox createHeader() {
+    private GridPane buildHeader() {
         var title = new Label("LEXICON CAFE");
         title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
         greetingLabel.setStyle("-fx-font-size: 14px;");
-        return new VBox(5, title, greetingLabel);
+        var header = new GridPane();
+        header.setVgap(5);
+        header.add(title, 0, 0);
+        header.add(greetingLabel, 0, 1);
+        return header;
     }
 
-    private HBox createCenter() {
-        var formSection = createFormSection();
-        var center = new HBox(20, createMenuSection(), formSection, createReceiptSection());
-        HBox.setHgrow(formSection, Priority.ALWAYS);
+    private GridPane buildCenter() {
+        var formSection = buildOrderForm();
+        var center = new GridPane();
+        center.setHgap(20);
+        center.add(buildMenu(), 0, 0);
+        center.add(formSection, 1, 0);
+        center.add(buildReceipt(), 2, 0);
+        GridPane.setHgrow(formSection, Priority.ALWAYS);
         return center;
     }
 
-    private VBox createMenuSection() {
-        var label = sectionLabel("Menu");
-        var section = new VBox(5, label, menuList);
-        VBox.setVgrow(menuList, Priority.ALWAYS);
+    private GridPane buildMenu() {
+        var label = buildSectionLabel("Menu");
+        var section = new GridPane();
+        section.setVgap(5);
+        section.add(label, 0, 0);
+        section.add(menuList, 0, 1);
+        GridPane.setVgrow(menuList, Priority.ALWAYS);
         return section;
     }
 
-    private VBox createFormSection() {
-        var label = sectionLabel("Order");
+    private GridPane buildOrderForm() {
+        var label = buildSectionLabel("Order");
 
-        var grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
+        var form = new GridPane();
+        form.setHgap(10);
+        form.setVgap(10);
 
         nameField.setPrefWidth(220);
         GridPane.setHgrow(nameField, Priority.ALWAYS);
 
-        grid.add(new Label("Customer name:"), 0, 0);
-        grid.add(nameField, 1, 0);
-        grid.add(new Label("Quantity:"), 0, 1);
-        grid.add(quantitySpinner, 1, 1);
-        grid.add(memberBox, 1, 2);
+        form.add(new Label("Customer name:"), 0, 0);
+        form.add(nameField, 1, 0);
+        form.add(new Label("Quantity:"), 0, 1);
+        form.add(quantitySpinner, 1, 1);
+        form.add(memberBox, 1, 2);
 
         var placeOrderBtn = new Button("Place Order");
         placeOrderBtn.setDefaultButton(true);
@@ -124,28 +133,40 @@ public class CafeGuiApp extends Application {
         var endOfDayBtn = new Button("End of Day");
         endOfDayBtn.setOnAction(event -> handleEndOfDay());
 
-        var buttons = new HBox(10, placeOrderBtn, newCustomerBtn, endOfDayBtn);
-        grid.add(buttons, 1, 3);
+        var buttons = new GridPane();
+        buttons.setHgap(10);
+        buttons.add(placeOrderBtn, 0, 0);
+        buttons.add(newCustomerBtn, 1, 0);
+        buttons.add(endOfDayBtn, 2, 0);
+        form.add(buttons, 1, 3);
 
-        return new VBox(10, label, grid);
-    }
-
-    private VBox createReceiptSection() {
-        var label = sectionLabel("Receipt");
-        var section = new VBox(5, label, receiptArea);
-        VBox.setVgrow(receiptArea, Priority.ALWAYS);
-        section.setPrefWidth(360);
+        var section = new GridPane();
+        section.setVgap(10);
+        section.add(label, 0, 0);
+        section.add(form, 0, 1);
         return section;
     }
 
-    private HBox createStatusBar() {
+    private GridPane buildReceipt() {
+        var label = buildSectionLabel("Receipt");
+        var section = new GridPane();
+        section.setVgap(5);
+        section.setPrefWidth(360);
+        section.add(label, 0, 0);
+        section.add(receiptArea, 0, 1);
+        GridPane.setVgrow(receiptArea, Priority.ALWAYS);
+        return section;
+    }
+
+    private GridPane buildStatusBar() {
         statusLabel.setFont(Font.font("Monospaced", 13));
-        var bar = new HBox(statusLabel);
+        var bar = new GridPane();
         bar.setPadding(new Insets(8, 0, 0, 0));
+        bar.add(statusLabel, 0, 0);
         return bar;
     }
 
-    private Label sectionLabel(String text) {
+    private Label buildSectionLabel(String text) {
         var label = new Label(text);
         label.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
         return label;
