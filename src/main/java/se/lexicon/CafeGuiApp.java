@@ -24,14 +24,14 @@ import javafx.stage.Stage;
 
 public class CafeGuiApp extends Application {
 
-    private final TextField nameField = new TextField();
-    private final Spinner<Integer> quantitySpinner =
+    final TextField nameField = new TextField();
+    final Spinner<Integer> quantitySpinner =
             new Spinner<>(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 99, 1));
-    private final CheckBox memberBox = new CheckBox("Loyalty member");
-    private final ListView<String> menuList = new ListView<>();
-    private final TextArea receiptArea = new TextArea();
-    private final Label greetingLabel = new Label("Welcome! What is your name?");
-    private final Label statusLabel = new Label();
+    final CheckBox memberBox = new CheckBox("Loyalty member");
+    final ListView<String> menuList = new ListView<>();
+    final TextArea receiptArea = new TextArea();
+    final Label greetingLabel = new Label("Welcome! What is your name?");
+    final Label statusLabel = new Label();
 
     private int customersServed;
     private double totalRevenue;
@@ -151,7 +151,7 @@ public class CafeGuiApp extends Application {
         return label;
     }
 
-    private void handlePlaceOrder() {
+    void handlePlaceOrder() {
         var order = createOrderFromForm();
         if (order == null) {
             return;
@@ -165,7 +165,7 @@ public class CafeGuiApp extends Application {
         updateStatus();
     }
 
-    private void handleNewCustomer() {
+    void handleNewCustomer() {
         nameField.clear();
         menuList.getSelectionModel().clearSelection();
         quantitySpinner.getValueFactory().setValue(1);
@@ -203,7 +203,7 @@ public class CafeGuiApp extends Application {
         Platform.exit();
     }
 
-    private Order createOrderFromForm() {
+    Order createOrderFromForm() {
         var name = nameField.getText().trim();
         if (name.isEmpty()) {
             showError("Please enter the customer's name.");
@@ -226,7 +226,7 @@ public class CafeGuiApp extends Application {
         return order;
     }
 
-    private void showError(String message) {
+    void showError(String message) {
         var alert = new Alert(Alert.AlertType.ERROR, message, ButtonType.OK);
         alert.setTitle("Invalid input");
         alert.setHeaderText(null);

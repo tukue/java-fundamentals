@@ -1,0 +1,22 @@
+name: Cafe tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  cafe-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+
+      - name: Run cafe and GUI tests under virtual display
+        run: xvfb-run -a mvn -B -ntp test -Dtest='OrderTest,CafeGuiAppTest'
