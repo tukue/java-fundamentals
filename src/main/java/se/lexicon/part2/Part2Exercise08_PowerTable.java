@@ -9,10 +9,10 @@ public class Part2Exercise08_PowerTable {
     }
 
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+        var scanner = new Scanner(System.in);
         System.out.print("Enter base: ");
-        double base = scanner.nextDouble();
-        for (int i = 1; i <= 10; i++) {
+        var base = scanner.nextDouble();
+        for (var i = 1; i <= 10; i++) {
             System.out.printf("%s ^ %-2d = %10.1f%n", stripTrailingZero(base), i, power(base, i));
         }
     }

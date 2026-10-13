@@ -13,9 +13,9 @@ public class Part2Exercise07_CircleCalculator {
     }
 
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+        var scanner = new Scanner(System.in);
         System.out.print("Enter radius: ");
-        double radius = scanner.nextDouble();
+        var radius = scanner.nextDouble();
         System.out.printf("Area         : %.2f%n", area(radius));
         System.out.printf("Circumference: %.2f%n", circumference(radius));
     }

@@ -17,13 +17,13 @@ public class Part2Exercise10_NumberCruncher {
     }
 
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+        var scanner = new Scanner(System.in);
         System.out.print("Enter first number : ");
-        int a = scanner.nextInt();
+        var a = scanner.nextInt();
         System.out.print("Enter second number: ");
-        int b = scanner.nextInt();
+        var b = scanner.nextInt();
         System.out.print("Enter third number : ");
-        int c = scanner.nextInt();
+        var c = scanner.nextInt();
         System.out.println("Maximum : " + findMax(a, b, c));
         System.out.println("Minimum : " + findMin(a, b, c));
         System.out.printf("Average : %.2f%n", average(a, b, c));

@@ -13,9 +13,9 @@ public class Part2Exercise02_EmailSlicer {
     }
 
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+        var scanner = new Scanner(System.in);
         System.out.print("Enter email: ");
-        String email = scanner.nextLine().trim();
+        var email = scanner.nextLine().trim();
         System.out.println("Username: " + getUsername(email));
         System.out.println("Domain  : " + getDomain(email));
     }

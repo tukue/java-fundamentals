@@ -9,9 +9,9 @@ public class Part2Exercise01_WordReverser {
     }
 
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+        var scanner = new Scanner(System.in);
         System.out.print("Enter a word: ");
-        String word = scanner.nextLine();
+        var word = scanner.nextLine();
         System.out.println("Reversed: " + reverse(word));
     }
 }
