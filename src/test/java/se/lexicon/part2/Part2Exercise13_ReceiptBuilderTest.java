@@ -18,9 +18,9 @@ class Part2Exercise13_ReceiptBuilderTest {
     @Test
     void buildReceipt_SampleItems_containsLinesAndTotal() {
         var receipt = Part2Exercise13_ReceiptBuilder.buildReceipt(
-                List.of("Apple", "Milk", "Bread"),
+                List.of("Mango", "Milk", "Bread"),
                 List.of(15.00, 22.50, 18.00));
-        assertTrue(receipt.contains("Apple"));
+        assertTrue(receipt.contains("Mango"));
         assertTrue(receipt.contains("Milk"));
         assertTrue(receipt.contains("Bread"));
         assertTrue(receipt.contains("Receipt"));
@@ -29,7 +29,7 @@ class Part2Exercise13_ReceiptBuilderTest {
 
     @Test
     void formatLine_AlignsPrice() {
-        assertEquals("Apple                   15.00",
-                Part2Exercise13_ReceiptBuilder.formatLine("Apple", 15.00));
+        assertEquals("Mango                   15.00",
+                Part2Exercise13_ReceiptBuilder.formatLine("Mango", 15.00));
     }
 }

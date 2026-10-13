@@ -5,14 +5,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class Part2Exercise06_WordCounterTest {
     @Test
-    void totalWords_ExampleSentence_returns10() {
-        assertEquals(10, Part2Exercise06_WordCounter.totalWords("To be or not to be that is the question"));
+    void totalWords_MotivatingText_returns6() {
+        assertEquals(6, Part2Exercise06_WordCounter.totalWords("Keep going keep growing keep shining"));
     }
 
     @Test
-    void countOccurrences_BeCaseInsensitive_returns2() {
-        assertEquals(2, Part2Exercise06_WordCounter.countOccurrences("To be or not to be that is the question", "be"));
-        assertEquals(2, Part2Exercise06_WordCounter.countOccurrences("To be or not to be that is the question", "BE"));
+    void countOccurrences_KeepCaseInsensitive_returns3() {
+        assertEquals(3, Part2Exercise06_WordCounter.countOccurrences("Keep going keep growing keep shining", "keep"));
+        assertEquals(3, Part2Exercise06_WordCounter.countOccurrences("Keep going keep growing keep shining", "KEEP"));
     }
 
     @Test
@@ -22,11 +22,11 @@ class Part2Exercise06_WordCounterTest {
 
     @Test
     void totalWords_ExtraSpaces_countsCorrectly() {
-        assertEquals(3, Part2Exercise06_WordCounter.totalWords("  green   red blue  "));
+        assertEquals(3, Part2Exercise06_WordCounter.totalWords("  keep   going strong  "));
     }
 
     @Test
     void countOccurrences_MissingWord_returns0() {
-        assertEquals(0, Part2Exercise06_WordCounter.countOccurrences("To be or not to be", "hamlet"));
+        assertEquals(0, Part2Exercise06_WordCounter.countOccurrences("Keep going keep growing", "quit"));
     }
 }
