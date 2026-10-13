@@ -13,4 +13,14 @@ class Part2Exercise08_PowerTableTest {
     void power_3to10_returns59049() {
         assertEquals(59049.0, Part2Exercise08_PowerTable.power(3, 10), 0.0001);
     }
+
+    @Test
+    void power_AnyBaseTo1_returnsBase() {
+        assertEquals(5.0, Part2Exercise08_PowerTable.power(5, 1), 0.0001);
+    }
+
+    @Test
+    void power_2to10_returns1024() {
+        assertEquals(1024.0, Part2Exercise08_PowerTable.power(2, 10), 0.0001);
+    }
 }

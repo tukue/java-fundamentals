@@ -18,4 +18,14 @@ class Part2Exercise04_InitialsGeneratorTest {
     void generateInitials_ExtraSpaces_stillWorks() {
         assertEquals("H.W.", Part2Exercise04_InitialsGenerator.generateInitials("  hello   world  "));
     }
+
+    @Test
+    void generateInitials_SingleWord_returnsOneInitial() {
+        assertEquals("P.", Part2Exercise04_InitialsGenerator.generateInitials("plato"));
+    }
+
+    @Test
+    void generateInitials_MixedCase_uppercasesInitials() {
+        assertEquals("J.P.", Part2Exercise04_InitialsGenerator.generateInitials("jAVA pROGRAMMING"));
+    }
 }

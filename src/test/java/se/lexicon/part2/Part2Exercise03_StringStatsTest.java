@@ -18,4 +18,14 @@ class Part2Exercise03_StringStatsTest {
     void countStats_OnlyDigitsAndSpaces_countsCorrectly() {
         assertArrayEquals(new int[]{0, 0, 4, 1}, Part2Exercise03_StringStats.countStats("123 4"));
     }
+
+    @Test
+    void countStats_Punctuation_ignored() {
+        assertArrayEquals(new int[]{1, 1, 0, 0}, Part2Exercise03_StringStats.countStats("Hi!"));
+    }
+
+    @Test
+    void countStats_AllVowels_countsOnlyVowels() {
+        assertArrayEquals(new int[]{10, 0, 0, 0}, Part2Exercise03_StringStats.countStats("aeiouAEIOU"));
+    }
 }

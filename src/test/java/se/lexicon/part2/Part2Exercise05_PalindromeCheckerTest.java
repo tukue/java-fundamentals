@@ -18,4 +18,14 @@ class Part2Exercise05_PalindromeCheckerTest {
     void isPalindrome_MixedCase_returnsTrue() {
         assertTrue(Part2Exercise05_PalindromeChecker.isPalindrome("LeVeL"));
     }
+
+    @Test
+    void isPalindrome_SingleChar_returnsTrue() {
+        assertTrue(Part2Exercise05_PalindromeChecker.isPalindrome("A"));
+    }
+
+    @Test
+    void isPalindrome_TwoDifferentChars_returnsFalse() {
+        assertFalse(Part2Exercise05_PalindromeChecker.isPalindrome("ab"));
+    }
 }

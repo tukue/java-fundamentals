@@ -19,4 +19,14 @@ class Part2Exercise06_WordCounterTest {
     void totalWords_Empty_returns0() {
         assertEquals(0, Part2Exercise06_WordCounter.totalWords("   "));
     }
+
+    @Test
+    void totalWords_ExtraSpaces_countsCorrectly() {
+        assertEquals(3, Part2Exercise06_WordCounter.totalWords("  green   red blue  "));
+    }
+
+    @Test
+    void countOccurrences_MissingWord_returns0() {
+        assertEquals(0, Part2Exercise06_WordCounter.countOccurrences("To be or not to be", "hamlet"));
+    }
 }

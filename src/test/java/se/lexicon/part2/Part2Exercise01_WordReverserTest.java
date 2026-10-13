@@ -18,4 +18,14 @@ class Part2Exercise01_WordReverserTest {
     void reverse_SingleChar_returnsSame() {
         assertEquals("a", Part2Exercise01_WordReverser.reverse("a"));
     }
+
+    @Test
+    void reverse_MixedCaseAndDigits_preservesCharacters() {
+        assertEquals("321bA", Part2Exercise01_WordReverser.reverse("Ab123"));
+    }
+
+    @Test
+    void reverse_Palindrome_returnsSame() {
+        assertEquals("level", Part2Exercise01_WordReverser.reverse("level"));
+    }
 }
