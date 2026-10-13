@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class Part2Exercise03_StringStatsTest {
     @Test
-    void countStats_Java101IsFun_returns4533() {
-        assertArrayEquals(new int[]{4, 5, 3, 3}, Part2Exercise03_StringStats.countStats("Java 101 is fun"));
+    void countStats_Code42_returns2220() {
+        assertArrayEquals(new int[]{2, 2, 2, 0}, Part2Exercise03_StringStats.countStats("Code42"));
     }
 
     @Test
@@ -15,8 +15,8 @@ class Part2Exercise03_StringStatsTest {
     }
 
     @Test
-    void countStats_OnlyDigitsAndSpaces_countsCorrectly() {
-        assertArrayEquals(new int[]{0, 0, 4, 1}, Part2Exercise03_StringStats.countStats("123 4"));
+    void countStats_OnlyDigits_countsCorrectly() {
+        assertArrayEquals(new int[]{0, 0, 4, 0}, Part2Exercise03_StringStats.countStats("1234"));
     }
 
     @Test
