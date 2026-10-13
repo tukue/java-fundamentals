@@ -11,7 +11,7 @@ class Part2Exercise04_InitialsGeneratorTest {
 
     @Test
     void generateInitials_ThreeNames_returnsThreeInitials() {
-        assertEquals("A.B.C.", Part2Exercise04_InitialsGenerator.generateInitials("anna maria karlsson"));
+        assertEquals("A.M.K.", Part2Exercise04_InitialsGenerator.generateInitials("anna maria karlsson"));
     }
 
     @Test
