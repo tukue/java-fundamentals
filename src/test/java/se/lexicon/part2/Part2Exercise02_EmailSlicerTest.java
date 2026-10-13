@@ -6,11 +6,11 @@ import static org.junit.jupiter.api.Assertions.*;
 class Part2Exercise02_EmailSlicerTest {
     @Test
     void getUsername_FullEmail_returnsUsername() {
-        assertEquals("mehrdad.javan", Part2Exercise02_EmailSlicer.getUsername("mehrdad.javan@lexicon.se"));
+        assertEquals("first.last", Part2Exercise02_EmailSlicer.getUsername("first.last@example.com"));
     }
 
     @Test
     void getDomain_FullEmail_returnsDomain() {
-        assertEquals("lexicon.se", Part2Exercise02_EmailSlicer.getDomain("mehrdad.javan@lexicon.se"));
+        assertEquals("example.com", Part2Exercise02_EmailSlicer.getDomain("first.last@example.com"));
     }
 }
