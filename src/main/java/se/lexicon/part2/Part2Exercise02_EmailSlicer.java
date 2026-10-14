@@ -5,11 +5,19 @@ import java.util.Scanner;
 public class Part2Exercise02_EmailSlicer {
 
     public static String getUsername(String email) {
-        return email.substring(0, email.indexOf('@'));
+        int atIndex = email.indexOf('@');
+        if (atIndex < 0) {
+            throw new IllegalArgumentException("Email must contain '@'");
+        }
+        return email.substring(0, atIndex);
     }
 
     public static String getDomain(String email) {
-        return email.substring(email.indexOf('@') + 1);
+        int atIndex = email.indexOf('@');
+        if (atIndex < 0) {
+            throw new IllegalArgumentException("Email must contain '@'");
+        }
+        return email.substring(atIndex + 1);
     }
 
     public static void main(String[] args) {

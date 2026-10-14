@@ -5,6 +5,9 @@ import java.util.Scanner;
 public class Part2Exercise05_PalindromeChecker {
 
     public static boolean isPalindrome(String word) {
+        if (word == null) {
+            return false;
+        }
         var lower = word.toLowerCase();
         return lower.equals(new StringBuilder(lower).reverse().toString());
     }

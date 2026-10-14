@@ -32,4 +32,11 @@ class Part2Exercise13_ReceiptBuilderTest {
         assertEquals("Avocado                 25.00",
                 Part2Exercise13_ReceiptBuilder.formatLine("Avocado", 25.00));
     }
+
+    @Test
+    void buildReceipt_MismatchedLists_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class,
+                () -> Part2Exercise13_ReceiptBuilder.buildReceipt(
+                        List.of("Avocado", "Milk"), List.of(25.00)));
+    }
 }
