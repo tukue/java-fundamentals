@@ -5,11 +5,11 @@ import java.util.Scanner;
 public class Part2Exercise03_StringStats {
 
     // Returns {vowels, consonants, digits, spaces}
-    public static int[] countStats(String word) {
+    public static int[] countStats(String words) {
         int vowels = 0, consonants = 0, digits = 0, spaces = 0;
         var vowelSet = "aeiouAEIOU";
-        for (var i = 0; i < word.length(); i++) {
-            var ch = word.charAt(i);
+        for (var i = 0; i < words.length(); i++) {
+            var ch = words.charAt(i);
             if (ch == ' ') {
                 spaces++;
             } else if (Character.isDigit(ch)) {
@@ -27,7 +27,7 @@ public class Part2Exercise03_StringStats {
 
     public static void main(String[] args) {
         var scanner = new Scanner(System.in);
-        System.out.print("Enter a word: ");
+        System.out.print("Enter a string of words: ");
         var word = scanner.nextLine();
         var stats = countStats(word);
         System.out.println("Vowels    : " + stats[0]);
