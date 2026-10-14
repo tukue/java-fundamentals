@@ -19,6 +19,9 @@ public class Part2Exercise13_ReceiptBuilder {
     }
 
     public static String buildReceipt(List<String> names, List<Double> prices) {
+        if (names.size() != prices.size()) {
+            throw new IllegalArgumentException("Names and prices must have the same number of items");
+        }
         var sb = new StringBuilder();
         sb.append("==============================\n");
         sb.append("           Receipt\n");

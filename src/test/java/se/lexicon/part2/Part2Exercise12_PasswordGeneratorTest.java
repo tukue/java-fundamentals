@@ -19,4 +19,10 @@ class Part2Exercise12_PasswordGeneratorTest {
     void generatePassword_Length0_returnsEmpty() {
         assertEquals("", Part2Exercise12_PasswordGenerator.generatePassword(0));
     }
+
+    @Test
+    void generatePassword_NegativeLength_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class,
+                () -> Part2Exercise12_PasswordGenerator.generatePassword(-1));
+    }
 }

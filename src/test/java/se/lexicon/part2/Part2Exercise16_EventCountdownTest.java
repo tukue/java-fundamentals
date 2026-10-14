@@ -30,4 +30,12 @@ class Part2Exercise16_EventCountdownTest {
 
         assertEquals(0, Part2Exercise16_EventCountdown.daysBetween(today, eventDate));
     }
+
+    @Test
+    void countdownMessage_InvalidDate_returnsHelpfulMessage() {
+        LocalDate today = LocalDate.of(2026, 6, 11);
+
+        assertEquals("Invalid date format. Please use yyyy-MM-dd.",
+                Part2Exercise16_EventCountdown.countdownMessage("Event", "not-a-date", today));
+    }
 }

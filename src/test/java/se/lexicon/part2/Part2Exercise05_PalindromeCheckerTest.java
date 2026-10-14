@@ -28,4 +28,9 @@ class Part2Exercise05_PalindromeCheckerTest {
     void isPalindrome_TwoDifferentChars_returnsFalse() {
         assertFalse(Part2Exercise05_PalindromeChecker.isPalindrome("ab"));
     }
+
+    @Test
+    void isPalindrome_Null_returnsFalse() {
+        assertFalse(Part2Exercise05_PalindromeChecker.isPalindrome(null));
+    }
 }

@@ -25,4 +25,16 @@ class Part2Exercise02_EmailSlicerTest {
         assertEquals("a", Part2Exercise02_EmailSlicer.getUsername("a@b.co"));
         assertEquals("b.co", Part2Exercise02_EmailSlicer.getDomain("a@b.co"));
     }
+
+    @Test
+    void getUsername_MissingAtSign_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class,
+                () -> Part2Exercise02_EmailSlicer.getUsername("user.example.com"));
+    }
+
+    @Test
+    void getDomain_MissingAtSign_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class,
+                () -> Part2Exercise02_EmailSlicer.getDomain("user.example.com"));
+    }
 }

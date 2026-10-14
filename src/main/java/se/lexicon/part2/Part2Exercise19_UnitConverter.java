@@ -15,10 +15,11 @@ public class Part2Exercise19_UnitConverter {
         throw new IllegalArgumentException("Unsupported unit: " + unit);
     }
 
-    public static double convert(double celsius, boolean toFahrenheit) {
-        if (toFahrenheit) {
-            return (celsius * 9.0 / 5.0) + 32;
-        }
+    public static double toFahrenheit(double celsius) {
+        return (celsius * 9.0 / 5.0) + 32;
+    }
+
+    public static double toKelvin(double celsius) {
         return celsius + 273.15;
     }
 
@@ -28,7 +29,8 @@ public class Part2Exercise19_UnitConverter {
         System.out.println("Choose conversion:");
         System.out.println("1. km -> miles");
         System.out.println("2. kg -> lbs");
-        System.out.println("3. °C -> °F / K");
+        System.out.println("3. °C -> °F");
+        System.out.println("4. °C -> K");
         System.out.print("Enter choice: ");
 
         int choice = scanner.nextInt();
@@ -46,17 +48,13 @@ public class Part2Exercise19_UnitConverter {
                 double pounds = convert(kg, "lbs");
                 System.out.printf("%.1f kg = %.2f lbs%n", kg, pounds);
             }
-            case 3 -> {
+            case 3, 4 -> {
                 System.out.print("Enter temperature in °C: ");
                 double celsius = scanner.nextDouble();
-                System.out.print("Convert to Fahrenheit or Kelvin? (true/false): ");
-                boolean toFahrenheit = scanner.nextBoolean();
-
-                double result = convert(celsius, toFahrenheit);
-                if (toFahrenheit) {
-                    System.out.printf("%.1f °C = %.2f °F%n", celsius, result);
+                if (choice == 3) {
+                    System.out.printf("%.1f °C = %.2f °F%n", celsius, toFahrenheit(celsius));
                 } else {
-                    System.out.printf("%.1f °C = %.2f K%n", celsius, result);
+                    System.out.printf("%.1f °C = %.2f K%n", celsius, toKelvin(celsius));
                 }
             }
             default -> System.out.println("Invalid choice.");
