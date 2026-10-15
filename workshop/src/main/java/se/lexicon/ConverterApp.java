@@ -10,7 +10,7 @@ public class ConverterApp {
     private static final double SEK_PER_EUR = 11.32;
 
     // --- Data storage units (binary: 1 unit = 1024 of the smaller) ---
-    static final String[] STORAGE_UNITS = {"Bytes", "KB", "MB", "GB", "TB"};
+    private static final String[] STORAGE_UNITS = {"Bytes", "KB", "MB", "GB", "TB"};
     private static final double BYTES_PER_UNIT_STEP = 1024.0;
 
     // --- Menu constants ---

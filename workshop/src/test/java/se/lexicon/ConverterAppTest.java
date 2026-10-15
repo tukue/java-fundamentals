@@ -10,8 +10,7 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ConverterAppTest {
 
@@ -169,7 +168,7 @@ class ConverterAppTest {
 
     @Test
     void bmi_typicalAdult() {
-        assertEquals(22.9, ConverterApp.bmi(70, 175), 0.05);
+        assertEquals(22.857142857142858, ConverterApp.bmi(70, 175), 1e-9);
     }
 
     @Test
@@ -252,9 +251,10 @@ class ConverterAppTest {
 
     @Test
     void storageConverter_invalidUnit_reprompts() {
-        String output = runApp("3\n9\n2\n1\n10\nno\n");
+        String output = runApp("3\n9\n0\nabc\n2\n1\n10\nno\n");
 
-        assertTrue(output.contains("Invalid choice. Please enter a number between 1 and 5."));
+        assertEquals(2, countOccurrences(output, "Invalid choice. Please enter a number between 1 and 5."));
+        assertEquals(1, countOccurrences(output, "Invalid input. Please enter a number."));
         assertTrue(output.contains("Result: 10.00 KB = 10240.00 Bytes"));
     }
 
