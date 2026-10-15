@@ -9,12 +9,18 @@ public class ConverterApp {
     private static final double SEK_PER_USD = 10.87;
     private static final double SEK_PER_EUR = 11.32;
 
+    // --- Data storage units (binary: 1 unit = 1024 of the smaller) ---
+    private static final String[] STORAGE_UNITS = {"Bytes", "KB", "MB", "GB", "TB"};
+    private static final double BYTES_PER_UNIT_STEP = 1024.0;
+
     // --- Menu constants ---
     private static final String BORDER = "==================================";
     private static final int OPTION_CURRENCY = 1;
-    private static final int OPTION_EXIT = 2;
+    private static final int OPTION_BMI = 2;
+    private static final int OPTION_STORAGE = 3;
+    private static final int OPTION_EXIT = 4;
     private static final int MIN_MENU_OPTION = 1;
-    private static final int MAX_MENU_OPTION = 2;
+    private static final int MAX_MENU_OPTION = 4;
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -26,6 +32,8 @@ public class ConverterApp {
 
             switch (choice) {
                 case OPTION_CURRENCY -> currencyConverter(scanner);
+                case OPTION_BMI -> bmiCalculator(scanner);
+                case OPTION_STORAGE -> storageConverter(scanner);
                 case OPTION_EXIT -> running = false;
             }
 
@@ -33,7 +41,7 @@ public class ConverterApp {
                 running = askToContinue(scanner);
             }
         }
-        System.out.println("Goodbye For now!");
+        System.out.println("Goodbye!");
     }
 
     private static void printMenu() {
@@ -41,6 +49,8 @@ public class ConverterApp {
         System.out.println("      LEXICON CONVERTER APP");
         System.out.println(BORDER);
         System.out.println(OPTION_CURRENCY + ". Currency Converter");
+        System.out.println(OPTION_BMI + ". BMI Calculator");
+        System.out.println(OPTION_STORAGE + ". Data Storage Converter");
         System.out.println(OPTION_EXIT + ". Exit");
         System.out.println(BORDER);
     }
@@ -70,6 +80,70 @@ public class ConverterApp {
 
     static double sekToEur(double sek) {
         return sek / SEK_PER_EUR;
+    }
+
+    // --- BMI Calculator ---
+
+    private static void bmiCalculator(Scanner scanner) {
+        System.out.println("--- BMI Calculator ---");
+        double weightKg = readDouble(scanner, "Enter weight in kg: ", 0.1,
+                "Invalid value. Weight must be greater than zero.");
+        double heightMetres = readDouble(scanner, "Enter height in metres: ", 0.1,
+                "Invalid value. Height must be greater than zero.");
+
+        double bmi = bmi(weightKg, heightMetres);
+        System.out.printf(Locale.ROOT, "BMI: %.2f  ->  %s%n", bmi, bmiCategory(bmi));
+    }
+
+    static double bmi(double weightKg, double heightMetres) {
+        return weightKg / (heightMetres * heightMetres);
+    }
+
+    static String bmiCategory(double bmi) {
+        if (bmi < 18.5) {
+            return "Underweight";
+        } else if (bmi < 25.0) {
+            return "Normal weight";
+        } else if (bmi < 30.0) {
+            return "Overweight";
+        }
+        return "Elevated";
+    }
+
+    // --- Data Storage Converter ---
+
+    private static void storageConverter(Scanner scanner) {
+        System.out.println("--- Data Storage Converter ---");
+        printStorageUnits();
+        int fromUnit = readChoice(scanner, "From unit: ", 1, STORAGE_UNITS.length);
+        printStorageUnits();
+        int toUnit = readChoice(scanner, "To unit: ", 1, STORAGE_UNITS.length);
+
+        double value = readDouble(scanner, "Enter value in " + STORAGE_UNITS[fromUnit - 1] + ": ", 0,
+                "Invalid value. Storage amount cannot be negative.");
+
+        double converted = convertStorage(value, fromUnit, toUnit);
+        System.out.printf(Locale.ROOT, "Result: %.2f %s = %.2f %s%n",
+                value, STORAGE_UNITS[fromUnit - 1], converted, STORAGE_UNITS[toUnit - 1]);
+    }
+
+    private static void printStorageUnits() {
+        StringBuilder options = new StringBuilder();
+        for (int i = 0; i < STORAGE_UNITS.length; i++) {
+            options.append(i + 1).append(". ").append(STORAGE_UNITS[i]);
+            if (i < STORAGE_UNITS.length - 1) {
+                options.append("  ");
+            }
+        }
+        System.out.println(options);
+    }
+
+    static double convertStorage(double value, int fromUnit, int toUnit) {
+        int steps = fromUnit - toUnit;
+        if (steps == 0) {
+            return value;
+        }
+        return value * Math.pow(BYTES_PER_UNIT_STEP, steps);
     }
 
     // --- Shared input helpers ---
