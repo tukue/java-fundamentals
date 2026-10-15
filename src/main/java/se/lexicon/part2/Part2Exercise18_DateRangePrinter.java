@@ -2,6 +2,7 @@ package se.lexicon.part2;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
 public class Part2Exercise18_DateRangePrinter {
@@ -21,17 +22,28 @@ public class Part2Exercise18_DateRangePrinter {
     public static void main(String[] args) {
         var scanner = new Scanner(System.in);
 
-        System.out.print("Enter start date (yyyy-MM-dd): ");
-        String startInput = scanner.nextLine();
+        LocalDate startDate = readDate(scanner, "Enter start date (yyyy-MM-dd): ");
+        LocalDate endDate = readDate(scanner, "Enter end date   (yyyy-MM-dd): ");
 
-        System.out.print("Enter end date   (yyyy-MM-dd): ");
-        String endInput = scanner.nextLine();
-
-        LocalDate startDate = LocalDate.parse(startInput);
-        LocalDate endDate = LocalDate.parse(endInput);
+        if (endDate.isBefore(startDate)) {
+            System.out.println("End date cannot be before start date.");
+            return;
+        }
 
         for (String dateText : generateDateRange(startDate, endDate)) {
             System.out.println(dateText);
+        }
+    }
+
+    private static LocalDate readDate(Scanner scanner, String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String input = scanner.nextLine().trim();
+            try {
+                return LocalDate.parse(input);
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid date. Please use yyyy-MM-dd format.");
+            }
         }
     }
 }

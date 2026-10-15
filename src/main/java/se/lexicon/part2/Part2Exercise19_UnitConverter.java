@@ -34,6 +34,7 @@ public class Part2Exercise19_UnitConverter {
         System.out.print("Enter choice: ");
 
         int choice = scanner.nextInt();
+        scanner.nextLine();
 
         switch (choice) {
             case 1 -> {
