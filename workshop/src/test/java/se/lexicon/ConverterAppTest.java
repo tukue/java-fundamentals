@@ -70,7 +70,7 @@ class ConverterAppTest {
         assertTrue(output.contains("2. BMI Calculator"));
         assertTrue(output.contains("3. Data Storage Converter"));
         assertTrue(output.contains("4. Exit"));
-        assertTrue(output.endsWith("Goodbye!\n"));
+        assertTrue(output.endsWith("Goodbye For now!\n"));
     }
 
     @Test
@@ -79,7 +79,7 @@ class ConverterAppTest {
 
         assertTrue(output.contains("--- Currency Converter ---"));
         assertTrue(output.contains("Result: 1000.00 SEK = 88.34 EUR"));
-        assertTrue(output.endsWith("Goodbye!\n"));
+        assertTrue(output.endsWith("Goodbye For now!\n"));
     }
 
     @Test
@@ -105,7 +105,7 @@ class ConverterAppTest {
         String output = runApp("9\n4\n");
 
         assertTrue(output.contains("Invalid choice. Please enter a number between 1 and 4."));
-        assertTrue(output.endsWith("Goodbye!\n"));
+        assertTrue(output.endsWith("Goodbye For now!\n"));
     }
 
     @Test
@@ -113,7 +113,7 @@ class ConverterAppTest {
         String output = runApp("abc\n4\n");
 
         assertTrue(output.contains("Invalid input. Please enter a number."));
-        assertTrue(output.endsWith("Goodbye!\n"));
+        assertTrue(output.endsWith("Goodbye For now!\n"));
     }
 
     @Test
@@ -161,7 +161,7 @@ class ConverterAppTest {
         String output = runApp("1\n1\n0\nmaybe\nno\n");
 
         assertTrue(output.contains("Please enter yes or no."));
-        assertTrue(output.endsWith("Goodbye!\n"));
+        assertTrue(output.endsWith("Goodbye For now!\n"));
     }
 
     // --- BMI Calculator tests ---
@@ -188,16 +188,25 @@ class ConverterAppTest {
 
     @Test
     void bmiCalculator_printsFormattedResult() {
-        String output = runApp("2\n75\n1.80\nno\n");
+        String output = runApp("2\n75\n1\n180\nno\n");
 
         assertTrue(output.contains("--- BMI Calculator ---"));
         assertTrue(output.contains("BMI: 23.15  ->  Normal weight"));
-        assertTrue(output.endsWith("Goodbye!\n"));
+        assertTrue(output.endsWith("Goodbye For now!\n"));
+    }
+
+    @Test
+    void bmiCalculator_metresPath_printsFormattedResult() {
+        String output = runApp("2\n75\n2\n1.80\nno\n");
+
+        assertTrue(output.contains("Convert height in:"));
+        assertTrue(output.contains("Enter height in metres:"));
+        assertTrue(output.contains("BMI: 23.15  ->  Normal weight"));
     }
 
     @Test
     void bmiCalculator_zeroWeight_reprompts() {
-        String output = runApp("2\n0\n75\n1.80\nno\n");
+        String output = runApp("2\n0\n75\n1\n180\nno\n");
 
         assertTrue(output.contains("Invalid value. Weight must be greater than zero."));
         assertTrue(output.contains("BMI: 23.15  ->  Normal weight"));
@@ -205,7 +214,7 @@ class ConverterAppTest {
 
     @Test
     void bmiCalculator_zeroHeight_reprompts() {
-        String output = runApp("2\n75\n0\n1.80\nno\n");
+        String output = runApp("2\n75\n1\n0\n180\nno\n");
 
         assertTrue(output.contains("Invalid value. Height must be greater than zero."));
         assertTrue(output.contains("BMI: 23.15  ->  Normal weight"));
@@ -239,7 +248,7 @@ class ConverterAppTest {
 
         assertTrue(output.contains("--- Data Storage Converter ---"));
         assertTrue(output.contains("Result: 1.00 KB = 1024.00 Bytes"));
-        assertTrue(output.endsWith("Goodbye!\n"));
+        assertTrue(output.endsWith("Goodbye For now!\n"));
     }
 
     @Test

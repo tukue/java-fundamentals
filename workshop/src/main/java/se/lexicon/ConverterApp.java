@@ -41,7 +41,7 @@ public class ConverterApp {
                 running = askToContinue(scanner);
             }
         }
-        System.out.println("Goodbye!");
+        System.out.println("Goodbye For now!");
     }
 
     private static void printMenu() {
@@ -88,8 +88,20 @@ public class ConverterApp {
         System.out.println("--- BMI Calculator ---");
         double weightKg = readDouble(scanner, "Enter weight in kg: ", 0.1,
                 "Invalid value. Weight must be greater than zero.");
-        double heightMetres = readDouble(scanner, "Enter height in metres: ", 0.1,
-                "Invalid value. Height must be greater than zero.");
+        System.out.println("Convert height in:");
+        System.out.println("  1. Centimetres");
+        System.out.println("  2. Metres");
+        int unit = readChoice(scanner, "Your choice: ", 1, 2);
+
+        double heightMetres;
+        if (unit == 1) {
+            double heightCm = readDouble(scanner, "Enter height in cm: ", 1.0,
+                    "Invalid value. Height must be greater than zero.");
+            heightMetres = heightCm / 100.0;
+        } else {
+            heightMetres = readDouble(scanner, "Enter height in metres: ", 0.1,
+                    "Invalid value. Height must be greater than zero.");
+        }
 
         double bmi = bmi(weightKg, heightMetres);
         System.out.printf(Locale.ROOT, "BMI: %.2f  ->  %s%n", bmi, bmiCategory(bmi));
