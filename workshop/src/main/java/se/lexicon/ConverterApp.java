@@ -32,7 +32,7 @@ public class ConverterApp {
 
             switch (choice) {
                 case OPTION_CURRENCY -> currencyConverter(scanner);
-                case OPTION_BMI -> bmiConverter(scanner);
+                case OPTION_BMI -> bmiCalculator(scanner);
                 case OPTION_STORAGE -> storageConverter(scanner);
                 case OPTION_EXIT -> running = false;
             }
@@ -41,7 +41,7 @@ public class ConverterApp {
                 running = askToContinue(scanner);
             }
         }
-        System.out.println("Goodbye For now!");
+        System.out.println("Goodbye!");
     }
 
     private static void printMenu() {
@@ -49,7 +49,7 @@ public class ConverterApp {
         System.out.println("      LEXICON CONVERTER APP");
         System.out.println(BORDER);
         System.out.println(OPTION_CURRENCY + ". Currency Converter");
-        System.out.println(OPTION_BMI + ". BMI Converter");
+        System.out.println(OPTION_BMI + ". BMI Calculator");
         System.out.println(OPTION_STORAGE + ". Data Storage Converter");
         System.out.println(OPTION_EXIT + ". Exit");
         System.out.println(BORDER);
@@ -82,29 +82,28 @@ public class ConverterApp {
         return sek / SEK_PER_EUR;
     }
 
-    // --- BMI Converter ---
+    // --- BMI Calculator ---
 
-    private static void bmiConverter(Scanner scanner) {
-        System.out.println("--- BMI Converter ---");
+    private static void bmiCalculator(Scanner scanner) {
+        System.out.println("--- BMI Calculator ---");
         double weightKg = readDouble(scanner, "Enter weight in kg: ", 0.1,
                 "Invalid value. Weight must be greater than zero.");
-        double heightCm = readDouble(scanner, "Enter height in cm: ", 1.0,
+        double heightMetres = readDouble(scanner, "Enter height in metres: ", 0.1,
                 "Invalid value. Height must be greater than zero.");
 
-        double bmi = bmi(weightKg, heightCm);
-        System.out.printf(Locale.ROOT, "Result: BMI = %.1f (%s)%n", bmi, bmiCategory(bmi));
+        double bmi = bmi(weightKg, heightMetres);
+        System.out.printf(Locale.ROOT, "BMI: %.2f  ->  %s%n", bmi, bmiCategory(bmi));
     }
 
-    static double bmi(double weightKg, double heightCm) {
-        double heightMeters = heightCm / 100.0;
-        return weightKg / (heightMeters * heightMeters);
+    static double bmi(double weightKg, double heightMetres) {
+        return weightKg / (heightMetres * heightMetres);
     }
 
     static String bmiCategory(double bmi) {
         if (bmi < 18.5) {
             return "Underweight";
         } else if (bmi < 25.0) {
-            return "Normal";
+            return "Normal weight";
         } else if (bmi < 30.0) {
             return "Overweight";
         }
