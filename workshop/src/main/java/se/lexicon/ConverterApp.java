@@ -33,7 +33,7 @@ public class ConverterApp {
                 running = askToContinue(scanner);
             }
         }
-        System.out.println("Goodbye!");
+        System.out.println("Goodbye For now!");
     }
 
     private static void printMenu() {

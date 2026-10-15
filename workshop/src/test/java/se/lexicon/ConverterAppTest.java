@@ -69,7 +69,7 @@ class ConverterAppTest {
         assertTrue(output.contains("      LEXICON CONVERTER APP"));
         assertTrue(output.contains("1. Currency Converter"));
         assertTrue(output.contains("2. Exit"));
-        assertTrue(output.endsWith("Goodbye!\n"));
+        assertTrue(output.endsWith("Goodbye For now!\n"));
     }
 
     @Test
@@ -78,7 +78,7 @@ class ConverterAppTest {
 
         assertTrue(output.contains("--- Currency Converter ---"));
         assertTrue(output.contains("Result: 1000.00 SEK = 88.34 EUR"));
-        assertTrue(output.endsWith("Goodbye!\n"));
+        assertTrue(output.endsWith("Goodbye For now!\n"));
     }
 
     @Test
@@ -104,7 +104,7 @@ class ConverterAppTest {
         String output = runApp("9\n2\n");
 
         assertTrue(output.contains("Invalid choice. Please enter a number between 1 and 2."));
-        assertTrue(output.endsWith("Goodbye!\n"));
+        assertTrue(output.endsWith("Goodbye For now!\n"));
     }
 
     @Test
@@ -112,7 +112,7 @@ class ConverterAppTest {
         String output = runApp("abc\n2\n");
 
         assertTrue(output.contains("Invalid input. Please enter a number."));
-        assertTrue(output.endsWith("Goodbye!\n"));
+        assertTrue(output.endsWith("Goodbye For now!\n"));
     }
 
     @Test
@@ -144,7 +144,7 @@ class ConverterAppTest {
         String output = runApp("1\n1\n0\nmaybe\nno\n");
 
         assertTrue(output.contains("Please enter yes or no."));
-        assertTrue(output.endsWith("Goodbye!\n"));
+        assertTrue(output.endsWith("Goodbye For now!\n"));
     }
 
     private int countOccurrences(String text, String needle) {
