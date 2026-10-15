@@ -104,6 +104,10 @@ public class ConverterApp {
                 System.out.println("Invalid input. Please enter a number.");
                 continue;
             }
+            if (!Double.isFinite(value)) {
+                System.out.println("Invalid input. Please enter a number.");
+                continue;
+            }
             if (value < min) {
                 System.out.println(belowMinMessage);
                 continue;

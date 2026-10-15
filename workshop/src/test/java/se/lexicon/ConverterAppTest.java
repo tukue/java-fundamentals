@@ -140,6 +140,22 @@ class ConverterAppTest {
     }
 
     @Test
+    void nanAmount_reprompts() {
+        String output = runApp("1\n1\nNaN\n10\nno\n");
+
+        assertTrue(output.contains("Invalid input. Please enter a number."));
+        assertTrue(output.contains("Result: 10.00 SEK = 0.92 USD"));
+    }
+
+    @Test
+    void infiniteAmount_reprompts() {
+        String output = runApp("1\n1\nInfinity\n10\nno\n");
+
+        assertTrue(output.contains("Invalid input. Please enter a number."));
+        assertTrue(output.contains("Result: 10.00 SEK = 0.92 USD"));
+    }
+
+    @Test
     void invalidContinueAnswer_reprompts() {
         String output = runApp("1\n1\n0\nmaybe\nno\n");
 
