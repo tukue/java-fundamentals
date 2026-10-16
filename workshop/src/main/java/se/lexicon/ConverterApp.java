@@ -34,6 +34,7 @@ public class ConverterApp {
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     public static void main(String[] args) {
+        history.clear();
         Scanner scanner = new Scanner(System.in);
         boolean running = true;
 
