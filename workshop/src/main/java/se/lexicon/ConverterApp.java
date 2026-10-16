@@ -1,5 +1,9 @@
 package se.lexicon;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
 
@@ -22,6 +26,13 @@ public class ConverterApp {
     private static final int MIN_MENU_OPTION = 1;
     private static final int MAX_MENU_OPTION = 4;
 
+    // --- Session history (Challenge 2) ---
+    private static final List<String> history = new ArrayList<>();
+
+    // --- Timestamp formatter (Challenge 3) ---
+    private static final DateTimeFormatter TIMESTAMP =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         boolean running = true;
@@ -41,6 +52,8 @@ public class ConverterApp {
                 running = askToContinue(scanner);
             }
         }
+
+        printHistory();
         System.out.println("Goodbye For now!");
     }
 
@@ -67,11 +80,18 @@ public class ConverterApp {
         double sek = readDouble(scanner, "Enter amount in SEK: ", 0,
                 "Invalid value. Currency amount cannot be negative.");
 
+        String left;
+        String right;
         if (direction == 1) {
-            System.out.printf(Locale.ROOT, "Result: %.2f SEK = %.2f USD%n", sek, sekToUsd(sek));
+            double usd = sekToUsd(sek);
+            left = String.format(Locale.ROOT, "%.2f SEK", sek);
+            right = String.format(Locale.ROOT, "%.2f USD", usd);
         } else {
-            System.out.printf(Locale.ROOT, "Result: %.2f SEK = %.2f EUR%n", sek, sekToEur(sek));
+            double eur = sekToEur(sek);
+            left = String.format(Locale.ROOT, "%.2f SEK", sek);
+            right = String.format(Locale.ROOT, "%.2f EUR", eur);
         }
+        printResult(String.format(Locale.ROOT, "Result: %s = %s", left, right), left, right);
     }
 
     static double sekToUsd(double sek) {
@@ -104,7 +124,9 @@ public class ConverterApp {
         }
 
         double bmi = bmi(weightKg, heightMetres);
-        System.out.printf(Locale.ROOT, "BMI: %.2f  ->  %s%n", bmi, bmiCategory(bmi));
+        String category = bmiCategory(bmi);
+        String left = String.format(Locale.ROOT, "BMI %.2f", bmi);
+        printResult(String.format(Locale.ROOT, "BMI: %.2f  ->  %s", bmi, category), left, category);
     }
 
     static double bmi(double weightKg, double heightMetres) {
@@ -135,8 +157,11 @@ public class ConverterApp {
                 "Invalid value. Storage amount cannot be negative.");
 
         double converted = convertStorage(value, fromUnit, toUnit);
-        System.out.printf(Locale.ROOT, "Result: %.2f %s = %.2f %s%n",
-                value, STORAGE_UNITS[fromUnit - 1], converted, STORAGE_UNITS[toUnit - 1]);
+        String fromName = STORAGE_UNITS[fromUnit - 1];
+        String toName = STORAGE_UNITS[toUnit - 1];
+        String left = String.format(Locale.ROOT, "%.2f %s", value, fromName);
+        String right = String.format(Locale.ROOT, "%.2f %s", converted, toName);
+        printResult(String.format(Locale.ROOT, "Result: %s = %s", left, right), left, right);
     }
 
     private static void printStorageUnits() {
@@ -156,6 +181,27 @@ public class ConverterApp {
             return value;
         }
         return value * Math.pow(BYTES_PER_UNIT_STEP, steps);
+    }
+
+    // --- Result output with timestamp + history (Challenges 2 & 3) ---
+
+    private static void printResult(String resultLine, String left, String right) {
+        System.out.println(resultLine);
+        System.out.println("Converted at: " + LocalDateTime.now().format(TIMESTAMP));
+        history.add(String.format("%d.  %-20s = %-20s", history.size() + 1, left, right));
+    }
+
+    private static void printHistory() {
+        System.out.println("\n=== Conversion History ===");
+        if (history.isEmpty()) {
+            System.out.println("(no conversions performed)");
+        } else {
+            for (String entry : history) {
+                System.out.println(entry);
+            }
+        }
+        System.out.println("==========================");
+        System.out.println("Total conversions: " + history.size());
     }
 
     // --- Shared input helpers ---
