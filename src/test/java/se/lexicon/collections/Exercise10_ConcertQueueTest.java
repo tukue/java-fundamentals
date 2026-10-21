@@ -10,16 +10,16 @@ class Exercise10_ConcertQueueTest {
 
     @Test
     void joinQueue_keepsInsertionOrder() {
-        var queue = Exercise10_ConcertQueue.joinQueue(List.of("Alice", "Bob", "Charlie"));
-        assertEquals(List.of("Alice", "Bob", "Charlie"), List.copyOf(queue));
+        var queue = Exercise10_ConcertQueue.joinQueue(List.of("Alice", "Bob", "Joe"));
+        assertEquals(List.of("Alice", "Bob", "Joe"), List.copyOf(queue));
     }
 
     @Test
     void firstInLine_removesFromFront() {
-        var queue = Exercise10_ConcertQueue.joinQueue(List.of("Alice", "Bob", "Charlie", "Diana"));
+        var queue = Exercise10_ConcertQueue.joinQueue(List.of("Alice", "Bob", "Joe", "Olivia"));
         var letIn = Exercise10_ConcertQueue.firstInLine(queue, 2);
         assertEquals(List.of("Alice", "Bob"), letIn);
-        assertEquals(List.of("Charlie", "Diana"), List.copyOf(queue));
+        assertEquals(List.of("Joe", "Olivia"), List.copyOf(queue));
     }
 
     @Test

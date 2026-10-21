@@ -30,7 +30,7 @@ class Exercise09_SubmissionTrackerTest {
     }
 
     @Test
-    void fullRun_producesFiveUniqueStudents() {
+    void fullRun_producesSevenUniqueStudents() {
         var tracker = new HashSet<String>();
         for (var student : Exercise09_SubmissionTracker.submissionOrder()) {
             Exercise09_SubmissionTracker.submit(tracker, student);

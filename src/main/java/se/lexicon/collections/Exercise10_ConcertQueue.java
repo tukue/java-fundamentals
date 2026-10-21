@@ -29,7 +29,7 @@ public class Exercise10_ConcertQueue {
     }
 
     public static void main(String[] args) {
-        var queue = joinQueue(List.of("Alice", "Bob", "Charlie", "Diana", "Erik", "Fatima"));
+        var queue = joinQueue(List.of("Alice", "Bob", "Joe", "Olivia", "Erik", "Fatima"));
 
         var letIn = firstInLine(queue, 2);
         for (var person : letIn) {

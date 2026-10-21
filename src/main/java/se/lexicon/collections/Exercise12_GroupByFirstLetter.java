@@ -17,7 +17,7 @@ import java.util.TreeMap;
 public class Exercise12_GroupByFirstLetter {
 
     public static List<String> names() {
-        return List.of("Alice", "Bob", "Anna", "Charlie", "Brian", "Amanda", "Carl");
+        return List.of("Alice", "Bob", "Anna", "Joe", "Brian", "Amanda", "Carl");
     }
 
     public static Map<Character, List<String>> groupByFirstLetter(List<String> names) {

@@ -10,9 +10,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class Exercise12_GroupByFirstLetterTest {
 
     @Test
-    void groupByFirstLetter_createsThreeGroups() {
+    void groupByFirstLetter_createsFourGroups() {
         var groups = Exercise12_GroupByFirstLetter.groupByFirstLetter(Exercise12_GroupByFirstLetter.names());
-        assertEquals(3, groups.size());
+        assertEquals(4, groups.size());
         assertTrue(groups.containsKey('A'));
         assertTrue(groups.containsKey('B'));
         assertTrue(groups.containsKey('C'));
@@ -24,7 +24,8 @@ class Exercise12_GroupByFirstLetterTest {
                 Exercise12_GroupByFirstLetter.groupByFirstLetter(Exercise12_GroupByFirstLetter.names());
         assertEquals(List.of("Alice", "Anna", "Amanda"), groups.get('A'));
         assertEquals(List.of("Bob", "Brian"), groups.get('B'));
-        assertEquals(List.of("Charlie", "Carl"), groups.get('C'));
+        assertEquals(List.of("Carl"), groups.get('C'));
+        assertEquals(List.of("Joe"), groups.get('J'));
     }
 
     @Test

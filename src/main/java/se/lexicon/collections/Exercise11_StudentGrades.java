@@ -1,10 +1,10 @@
 /*
- * Storage: HashMap<String, Integer>
+ * Collection choice: HashMap<String, Integer> for storage + sorted List for ranking
+ *
  * - Each student has exactly one grade, so name -> grade is a natural key/value pair.
  * - HashMap gives O(1) lookup by name, which is what "find quickly by name" asks for.
- *
- * Sorting: HashMap has no order of its own, so I copy its entries into a List and
- * sort that list with a comparator that compares grades from highest to lowest.
+ * - HashMap has no order of its own, so I copy its entries into a List and
+ *   sort that list with a comparator that compares grades from highest to lowest.
  */
 package se.lexicon.collections;
 
@@ -21,10 +21,10 @@ public class Exercise11_StudentGrades {
         var grades = new LinkedHashMap<String, Integer>();
         grades.put("Alice", 92);
         grades.put("Bob", 71);
-        grades.put("Charlie", 85);
-        grades.put("Diana", 99);
-        grades.put("Erik", 64);
-        grades.put("Fatima", 78);
+        grades.put("Joe", 90);
+        grades.put("Olivia", 99);
+        grades.put("Erik", 86);
+        grades.put("Mia", 89);
         return grades;
     }
 

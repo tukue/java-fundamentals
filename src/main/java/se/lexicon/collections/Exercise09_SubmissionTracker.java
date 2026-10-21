@@ -9,14 +9,14 @@
  */
 package se.lexicon.collections;
 
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class Exercise09_SubmissionTracker {
 
     public static Set<String> createTracker() {
-        return new LinkedHashSet<>();
+        return new HashSet<>();
     }
 
     public static boolean submit(Set<String> submitted, String student) {
@@ -24,7 +24,8 @@ public class Exercise09_SubmissionTracker {
     }
 
     public static List<String> submissionOrder() {
-        return List.of("Emma", "Liam", "Olivia", "Noah", "Emma", "Ava", "Liam", "Mia", "Ethan", "Mia");
+        return List.of("Carol", "Olivia", "Ava", "Carol", "Mia", "Ethan",
+                "Mia", "Ethan", "Mallory", "Trent", "Mallory");
     }
 
     public static void main(String[] args) {

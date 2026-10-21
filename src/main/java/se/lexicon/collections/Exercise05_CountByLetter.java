@@ -14,7 +14,7 @@ import java.util.Scanner;
 public class Exercise05_CountByLetter {
 
     public static List<String> names() {
-        return List.of("Anna", "Bob", "Alice", "Charlie", "Amanda", "David", "Amy", "Brian");
+        return List.of("Anna", "Bob", "Alice", "Joe", "Amanda", "David", "Amy", "Brian");
     }
 
     public static long countStartingWith(List<String> names, String letter) {

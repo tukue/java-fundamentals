@@ -27,9 +27,9 @@ class Exercise11_StudentGradesTest {
     @Test
     void sortedByGrade_isDescending() {
         var sorted = Exercise11_StudentGrades.sortedByGrade(Exercise11_StudentGrades.createGrades());
-        assertEquals("Diana", sorted.get(0).getKey());
+        assertEquals("Olivia", sorted.get(0).getKey());
         assertEquals(99, sorted.get(0).getValue());
-        assertEquals("Erik", sorted.get(sorted.size() - 1).getKey());
+        assertEquals("Bob", sorted.get(sorted.size() - 1).getKey());
         for (var i = 1; i < sorted.size(); i++) {
             assertTrue(sorted.get(i - 1).getValue() >= sorted.get(i).getValue());
         }
