@@ -41,11 +41,12 @@ public class Exercise11_StudentGrades {
     public static void main(String[] args) {
         var grades = new HashMap<>(createGrades());
 
-        System.out.print("Enter a student name (e.g. Alice): ");
-        var scanner = new java.util.Scanner(System.in);
-        var name = scanner.nextLine().trim();
-        var grade = gradeOf(grades, name);
-        System.out.println(grade != null ? name + ": " + grade : "Student not found.");
+        try (var scanner = new java.util.Scanner(System.in)) {
+            System.out.print("Enter a student name (e.g. Alice): ");
+            var name = scanner.nextLine().trim();
+            var grade = gradeOf(grades, name);
+            System.out.println(grade != null ? name + ": " + grade : "Student not found.");
+        }
 
         System.out.println("All students by grade (high to low):");
         for (var entry : sortedByGrade(grades)) {

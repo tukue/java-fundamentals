@@ -27,6 +27,9 @@ public class Exercise13_MostFrequentWord {
     }
 
     public static WordCount mostFrequent(List<String> words) {
+        if (words.isEmpty()) {
+            throw new IllegalArgumentException("words must not be empty");
+        }
         var counts = countWords(words);
         WordCount best = null;
         for (var entry : counts.entrySet()) {

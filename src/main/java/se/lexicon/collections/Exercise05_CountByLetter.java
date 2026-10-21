@@ -32,10 +32,11 @@ public class Exercise05_CountByLetter {
     }
 
     public static void main(String[] args) {
-        var scanner = new Scanner(System.in);
-        System.out.print("Enter a letter: ");
-        var letter = scanner.nextLine().trim();
-        var count = countStartingWith(names(), letter);
-        System.out.println("Names starting with \"" + letter + "\": " + count);
+        try (var scanner = new Scanner(System.in)) {
+            System.out.print("Enter a letter: ");
+            var letter = scanner.nextLine().trim();
+            var count = countStartingWith(names(), letter);
+            System.out.println("Names starting with \"" + letter + "\": " + count);
+        }
     }
 }

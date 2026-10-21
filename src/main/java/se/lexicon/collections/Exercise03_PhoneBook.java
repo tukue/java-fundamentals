@@ -29,10 +29,11 @@ public class Exercise03_PhoneBook {
 
     public static void main(String[] args) {
         var phoneBook = createPhoneBook();
-        var scanner = new Scanner(System.in);
-        System.out.print("Enter a name: ");
-        var name = scanner.nextLine().trim();
-        var number = lookup(phoneBook, name);
-        System.out.println(number != null ? number : "Contact not found.");
+        try (var scanner = new Scanner(System.in)) {
+            System.out.print("Enter a name: ");
+            var name = scanner.nextLine().trim();
+            var number = lookup(phoneBook, name);
+            System.out.println(number != null ? number : "Contact not found.");
+        }
     }
 }

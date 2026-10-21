@@ -29,4 +29,10 @@ class Exercise13_MostFrequentWordTest {
         var result = Exercise13_MostFrequentWord.mostFrequent(List.of("solo"));
         assertEquals(new WordCount("solo", 1), result);
     }
+
+    @Test
+    void mostFrequent_emptyList_throws() {
+        assertThrows(IllegalArgumentException.class,
+                () -> Exercise13_MostFrequentWord.mostFrequent(List.of()));
+    }
 }
