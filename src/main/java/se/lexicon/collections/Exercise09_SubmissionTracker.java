@@ -24,8 +24,8 @@ public class Exercise09_SubmissionTracker {
     }
 
     public static List<String> submissionOrder() {
-        return List.of("Carol", "Olivia", "Ava", "Carol", "Mia", "Ethan",
-                "Mia", "Ethan", "Mallory", "Trent", "Mallory");
+        return List.of("Carol", "Olivia", "Carol", "Mia", "Ethan",
+                "Mia", "Ethan", "Trent");
     }
 
     public static void main(String[] args) {
