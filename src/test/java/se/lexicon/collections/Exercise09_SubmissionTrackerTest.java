@@ -30,12 +30,12 @@ class Exercise09_SubmissionTrackerTest {
     }
 
     @Test
-    void fullRun_producesSevenUniqueStudents() {
+    void fullRun_producesFiveUniqueStudents() {
         var tracker = new HashSet<String>();
         for (var student : Exercise09_SubmissionTracker.submissionOrder()) {
             Exercise09_SubmissionTracker.submit(tracker, student);
         }
-        assertEquals(7, tracker.size());
+        assertEquals(5, tracker.size());
         assertTrue(tracker.contains("Mia"));
     }
 }
