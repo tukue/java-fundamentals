@@ -25,7 +25,7 @@ public class Exercise04_FindLargest {
     }
 
     public static void main(String[] args) {
-        var numbers = List.of(14, 3, 78, 45, 22, 91, 7, 56);
+        var numbers = List.of(14, 3, 78, 45, 22, 95, 7, 56);
         System.out.println("Numbers: " + numbers);
         System.out.println("Largest: " + findLargest(numbers));
     }
