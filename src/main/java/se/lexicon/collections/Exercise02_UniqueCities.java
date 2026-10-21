@@ -2,7 +2,7 @@
  * Collection choice: LinkedHashSet<String>
  *
  * - A Set rejects duplicates automatically, so the repeated cities
- *   collapse into one entry each - exactly what "automatically handles duplicates" asks for.
+ *   are stored only once - exactly what "automatically handles duplicates" asks for.
  * - LinkedHashSet preserves insertion order, so the unique cities print in the
  *   same order they first appeared (a plain HashSet would print in random order).
  */
