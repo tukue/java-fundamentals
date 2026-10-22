@@ -1,0 +1,56 @@
+name: Contact workshop CI/CD
+
+on:
+  push:
+    paths:
+      - 'contact-workshop/**'
+      - '.github/workflows/contact-workshop.yml'
+  pull_request:
+    paths:
+      - 'contact-workshop/**'
+      - '.github/workflows/contact-workshop.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: contact-workshop-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    name: Build, test, and package
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Java 25
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+          cache-dependency-path: contact-workshop/pom.xml
+
+      - name: Build and test contact workshop
+        run: mvn --batch-mode --no-transfer-progress -f contact-workshop/pom.xml clean verify
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: contact-workshop-test-reports
+          path: contact-workshop/target/surefire-reports/
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Upload application JAR
+        uses: actions/upload-artifact@v7
+        with:
+          name: contact-workshop-${{ github.sha }}
+          path: contact-workshop/target/contact-workshop-*.jar
+          if-no-files-found: error
+          retention-days: 30

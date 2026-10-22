@@ -2,7 +2,15 @@ name: Cafe tests
 
 on:
   push:
+    paths:
+      - 'src/**'
+      - 'pom.xml'
+      - '.github/workflows/cafe-tests.yml'
   pull_request:
+    paths:
+      - 'src/**'
+      - 'pom.xml'
+      - '.github/workflows/cafe-tests.yml'
   workflow_dispatch:
 
 jobs:

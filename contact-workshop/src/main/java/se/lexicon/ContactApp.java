@@ -52,9 +52,15 @@ public class ContactApp {
     }
 
     private void saveContacts() {
-        fileStore.save(repository.findAll());
-        System.out.println("Saved " + repository.findAll().size() + " contact(s) to "
-                + fileStore.getFile().getFileName());
+        var allContacts = repository.findAll();
+        try {
+            if (fileStore.save(allContacts)) {
+                System.out.println("Saved " + allContacts.size() + " contact(s) to "
+                        + fileStore.getFile().getFileName());
+            }
+        } catch (IllegalArgumentException e) {
+            System.out.println("Warning: contacts were not saved: " + e.getMessage());
+        }
     }
 
     private void printMenu() {
@@ -96,8 +102,10 @@ public class ContactApp {
     }
 
     private void searchContacts() {
-        System.out.print("Search name or phone: ");
-        var query = SCANNER.nextLine().trim();
+        var query = readLine("Search name or phone: ");
+        if (query == null) {
+            return;
+        }
         var matches = service.search(query);
         if (matches.isEmpty()) {
             System.out.println("No contacts match \"" + query + "\".");
@@ -139,9 +147,8 @@ public class ContactApp {
             System.out.println("No contact with id " + id);
             return;
         }
-        System.out.print("Delete contact #" + id + "? (yes/no): ");
-        var answer = SCANNER.nextLine().trim().toLowerCase();
-        if (!answer.equals("yes")) {
+        var answer = readLine("Delete contact #" + id + "? (yes/no): ");
+        if (!"yes".equalsIgnoreCase(answer)) {
             System.out.println("Delete cancelled.");
             return;
         }

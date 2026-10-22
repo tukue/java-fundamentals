@@ -1,6 +1,7 @@
 package se.lexicon;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -35,21 +36,28 @@ public class ContactFileStore {
                     .map(this::parse)
                     .filter(Objects::nonNull)
                     .toList();
-        } catch (IOException e) {
+        } catch (IOException | UncheckedIOException e) {
             System.out.println("Warning: could not read " + file + " (" + e.getMessage() + ")");
             return List.of();
         }
     }
 
-    public void save(List<Contact> contacts) {
+    /**
+     * Returns whether the file was written successfully.
+     * @throws IllegalArgumentException if a field contains a tab or line break;
+     *         the existing file is left unchanged
+     */
+    public boolean save(List<Contact> contacts) {
         try {
             if (file.getParent() != null) {
                 Files.createDirectories(file.getParent());
             }
             var lines = contacts.stream().map(this::format).toList();
             Files.write(file, lines, StandardCharsets.UTF_8);
+            return true;
         } catch (IOException e) {
             System.out.println("Warning: could not write " + file + " (" + e.getMessage() + ")");
+            return false;
         }
     }
 
@@ -73,6 +81,13 @@ public class ContactFileStore {
     }
 
     private String format(Contact contact) {
+        var fields = List.of(contact.getFirstName(), contact.getLastName(),
+                contact.getPhone(), contact.getEmail());
+        for (var field : fields) {
+            if (field.contains(DELIMITER) || field.contains("\n") || field.contains("\r")) {
+                throw new IllegalArgumentException("Contact fields must not contain tabs or line breaks");
+            }
+        }
         return String.join(DELIMITER,
                 String.valueOf(contact.getId()),
                 contact.getFirstName(),
