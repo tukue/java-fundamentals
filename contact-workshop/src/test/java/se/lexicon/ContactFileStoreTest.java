@@ -11,6 +11,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ContactFileStoreTest {
@@ -116,4 +117,12 @@ class ContactFileStoreTest {
         assertTrue(Files.exists(store.getFile()));
         assertTrue(store.load().isEmpty());
     }
+    @Test
+    void save_reportsFailureWhenTargetIsDirectory() throws IOException {
+        var directory = Files.createDirectory(tempDir.resolve("contacts.txt"));
+        var store = new ContactFileStore(directory);
+        assertFalse(store.save(List.of(contact(1, FIRST_NAME, LAST_NAME, PHONE, EMAIL))));
+        assertTrue(Files.isDirectory(directory));
+    }
+
 }

@@ -12,7 +12,7 @@ public class ContactService {
     }
 
     public ValidationResult add(String firstName, String lastName, String phone, String email) {
-        var error = validate(firstName, lastName, phone);
+        var error = validate(firstName, lastName, phone, email);
         if (error != null) {
             return new ValidationResult(false, error);
         }
@@ -27,7 +27,7 @@ public class ContactService {
         if (repository.findById(id).isEmpty()) {
             return new ValidationResult(false, "No contact with id " + id);
         }
-        var error = validate(firstName, lastName, phone);
+        var error = validate(firstName, lastName, phone, email);
         if (error != null) {
             return new ValidationResult(false, error);
         }
@@ -62,7 +62,7 @@ public class ContactService {
         return value == null ? "" : value.trim();
     }
 
-    private static String validate(String firstName, String lastName, String phone) {
+    private static String validate(String firstName, String lastName, String phone, String email) {
         var first = trim(firstName);
         if (first.isEmpty()) {
             return "First name is required";
@@ -83,6 +83,18 @@ public class ContactService {
         }
         if (!isAllDigits(number)) {
             return "Phone number must contain digits only";
+        }
+        var address = trim(email);
+        if (address.isEmpty()) {
+            return "Email is required";
+        }
+        if (!address.matches("[^\\s@]+@[^\\s@.]+(?:\\.[^\\s@.]+)+")) {
+            return "Email must have a valid address format";
+        }
+        for (var field : List.of(first, last, address)) {
+            if (field.contains("\t") || field.contains("\n") || field.contains("\r")) {
+                return "Contact fields must not contain tabs or line breaks";
+            }
         }
         return null;
     }

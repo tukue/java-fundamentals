@@ -20,7 +20,8 @@ Enforced by `ContactService` before anything is stored:
 
 - First and last name – required, and must contain at least one letter (a name is text, not a number)
 - Phone – required, digits only (`0`–`9`)
-- E-mail – must be unique (the format itself is not checked)
+- E-mail – required, unique, and must have a basic `local@domain.suffix` shape with no whitespace
+- Fields must not contain tabs or line breaks
 
 Invalid input is reported with a message and the form is asked again.
 

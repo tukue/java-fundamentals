@@ -4,6 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.jupiter.params.provider.Arguments;
 import java.util.stream.Stream;
 
@@ -277,4 +279,34 @@ class ContactServiceTest {
 
         assertTrue(service.search("zzz").isEmpty());
     }
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {" ", "alex", "alex@", "@example.com", "alex@example", "alex@@example.com",
+            "alex smith@example.com", "alex@example..com", "alex\t@example.com"})
+    void add_rejectsInvalidEmail(String email) {
+        var result = service.add(FIRST_NAME, LAST_NAME, PHONE, email);
+        assertFalse(result.ok());
+        assertTrue(result.message().startsWith("Email"));
+        assertTrue(service.list().isEmpty());
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {" ", "alex", "alex@", "@example.com", "alex@example", "alex@@example.com",
+            "alex smith@example.com", "alex@example..com", "alex\t@example.com"})
+    void update_rejectsInvalidEmailWithoutChangingContact(String email) {
+        assertTrue(service.add(FIRST_NAME, LAST_NAME, PHONE, EMAIL).ok());
+        var original = service.find(1).orElseThrow();
+        var result = service.update(1, OTHER_FIRST_NAME, OTHER_LAST_NAME, OTHER_PHONE, email);
+        assertFalse(result.ok());
+        assertEquals(original, service.find(1).orElseThrow());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"Alex\tJane", "Alex\nJane", "Alex\rJane"})
+    void add_rejectsNamesThatCannotBePersisted(String name) {
+        assertFalse(service.add(name, LAST_NAME, PHONE, EMAIL).ok());
+        assertTrue(service.list().isEmpty());
+    }
+
 }

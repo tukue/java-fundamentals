@@ -43,12 +43,16 @@ stored. The service is the single gatekeeper – the UI does not validate on its
 | V4 | last name | must contain at least one letter | `Last name must be text, not numbers` |
 | V5 | phone | not blank after trim | `Phone number is required` |
 | V6 | phone | digits only (`0`–`9`) – no spaces, `+`, `-` or letters | `Phone number must contain digits only` |
+| V7 | email | required after trim | `Email is required` |
+| V8 | email | basic `local@domain.suffix` shape, no whitespace | `Email must have a valid address format` |
+| V9 | names/email | no tabs or line breaks | `Contact fields must not contain tabs or line breaks` |
 
 - Validation runs on the trimmed values, so `"  "` is blank and `" Alex "` is stored as `Alex`.
 - The app re-prompts the form when the service rejects the input; the service never stores a rejected
   entry and the repository never sees it.
-- Email *format* is deliberately **not** validated – only uniqueness (a storage invariant). Keeping
-  it out avoids a half-finished e-mail rule set (RFC 5322 is not a regex).
+- Email is required and checked for a basic `local@domain.suffix` shape without whitespace.
+  This is a basic input check, not full RFC 5322 validation or deliverability verification.
+- Names and email must not contain tabs or line breaks so they can be persisted safely.
 - Phone is kept as a `String` even though it only holds digits: a phone number is an identifier, not
   a quantity, so it must not lose leading zeros or be turned into an arithmetic value.
 
@@ -143,7 +147,7 @@ classDiagram
         +find(id) Optional~Contact~
         +list() List~Contact~
         +search(query) List~Contact~
-        -validate(first, last, phone) String
+        -validate(first, last, phone, email) String
     }
 
     class ValidationResult {
@@ -158,7 +162,7 @@ classDiagram
         -Path file
         +getFile() Path
         +load() List~Contact~
-        +save(contacts) void
+        +save(contacts) boolean
     }
 
     class ContactApp {
@@ -200,7 +204,7 @@ classDiagram
 | `delete` (service) | valid → ok | unknown id |
 | validation (service) | valid names + digits-only phone accepted, surrounding whitespace trimmed | blank name, digits-only name, blank phone, phone with letters/spaces/symbols → rejected, nothing stored |
 
-> Email *format* is still not validated (only uniqueness), so no test covers it.
+> Email tests cover null, blank, malformed and duplicate addresses on add and update.
 > The rules live in `ContactService.validate` and are covered through the service – there is no separate validator class.
 
 ## Challenge 3 – File export/import: the I/O design
@@ -322,7 +326,7 @@ itself, so an export is a read-only operation on the app's state.
 ### Known gaps
 
 - `contacts.txt` is loaded without validation, so a file written before the validation rules existed (or hand-edited) can still hold an invalid contact. The import path is validated, the internal file is not – fixing that means validating on load.
-- The console `add` path only requires the e-mail to be unique, while the importer skips rows with an empty e-mail (in a CSV the e-mail is the identity column). The asymmetry is deliberate for now.
+- Console add/update require a nonblank email with a basic address shape; the planned importer must reuse the same checks.
 
 ### Explicitly out of scope for the challenge
 
@@ -334,5 +338,5 @@ itself, so an export is a read-only operation on the app's state.
 
 - Challenge 1: sorted output
 - Challenge 3: file export/import → I/O design documented above, implementation still pending
-- E-mail format validation (only uniqueness is enforced today)
+- Full RFC email validation and deliverability verification
 - GUI, database, networking
