@@ -6,7 +6,9 @@ public class ContactApp {
 
     private static final Scanner SCANNER = new Scanner(System.in);
 
-    private final ContactService service = new ContactService(new ContactRepository());
+    private final ContactRepository repository = new ContactRepository();
+    private final ContactService service = new ContactService(repository);
+    private final ContactFileStore fileStore = new ContactFileStore();
 
     public static void main(String[] args) {
         new ContactApp().runMenu();
@@ -16,11 +18,13 @@ public class ContactApp {
         System.out.println("=================================");
         System.out.println("       Contact Manager");
         System.out.println("=================================");
+        loadContacts();
 
         while (true) {
             printMenu();
             if (!SCANNER.hasNextLine()) {
-                break;
+                saveContacts();
+                return;
             }
             var choice = SCANNER.nextLine().trim();
             switch (choice) {
@@ -30,12 +34,27 @@ public class ContactApp {
                 case "4" -> updateContact();
                 case "5" -> deleteContact();
                 case "0" -> {
+                    saveContacts();
                     System.out.println("Goodbye!");
                     return;
                 }
                 default -> System.out.println("Invalid option, try again.");
             }
         }
+    }
+
+    private void loadContacts() {
+        var loaded = fileStore.load();
+        repository.loadAll(loaded);
+        if (!loaded.isEmpty()) {
+            System.out.println("Loaded " + loaded.size() + " contact(s) from " + fileStore.getFile().getFileName());
+        }
+    }
+
+    private void saveContacts() {
+        fileStore.save(repository.findAll());
+        System.out.println("Saved " + repository.findAll().size() + " contact(s) to "
+                + fileStore.getFile().getFileName());
     }
 
     private void printMenu() {

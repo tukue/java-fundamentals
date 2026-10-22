@@ -27,6 +27,16 @@ public class ContactRepository {
         return List.copyOf(contacts.values());
     }
 
+    public void loadAll(List<Contact> loaded) {
+        contacts.clear();
+        var maxId = 0;
+        for (var contact : loaded) {
+            contacts.putIfAbsent(contact.getId(), contact);
+            maxId = Math.max(maxId, contact.getId());
+        }
+        nextId = maxId + 1;
+    }
+
     public Optional<Contact> findById(int id) {
         return Optional.ofNullable(contacts.get(id));
     }
