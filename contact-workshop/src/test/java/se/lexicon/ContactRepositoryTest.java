@@ -17,8 +17,8 @@ class ContactRepositoryTest {
     private static final String EMAIL_DOMAIN = "example.com";
     private static final String EMAIL = emailFor(FIRST_NAME, LAST_NAME);
 
-    private static final String OTHER_FIRST_NAME = "Sam";
-    private static final String OTHER_LAST_NAME = "Taylor";
+    private static final String OTHER_FIRST_NAME = "Alice";
+    private static final String OTHER_LAST_NAME = "Bob";
     private static final String OTHER_PHONE = "0987654321";
     private static final String OTHER_EMAIL = emailFor(OTHER_FIRST_NAME, OTHER_LAST_NAME);
 
@@ -41,14 +41,14 @@ class ContactRepositoryTest {
         return add(FIRST_NAME, LAST_NAME, PHONE, EMAIL);
     }
 
-    private Contact addSam() {
+    private Contact addAlice() {
         return add(OTHER_FIRST_NAME, OTHER_LAST_NAME, OTHER_PHONE, OTHER_EMAIL);
     }
 
     @Test
     void add_storesContactAndAssignsSequentialIds() {
         var first = addAlex();
-        var second = addSam();
+        var second = addAlice();
 
         assertNotNull(first);
         assertNotNull(second);
@@ -91,7 +91,7 @@ class ContactRepositoryTest {
     @Test
     void findAll_keepsInsertionOrder() {
         addAlex();
-        addSam();
+        addAlice();
 
         var all = repository.findAll();
 
@@ -103,10 +103,10 @@ class ContactRepositoryTest {
     @Test
     void search_matchesFirstNameLastNameAndPhoneIgnoringCase() {
         addAlex();
-        addSam();
+        addAlice();
 
         assertEquals(1, repository.search("alex").size());
-        assertEquals(1, repository.search("TAYLOR").size());
+        assertEquals(1, repository.search("BOB").size());
         assertEquals(1, repository.search("12345").size());
         assertEquals(2, repository.search("").size());
     }
@@ -145,7 +145,7 @@ class ContactRepositoryTest {
     @Test
     void update_rejectsEmailAlreadyUsedByAnotherContact() {
         addAlex();
-        addSam();
+        addAlice();
 
         var updated = repository.update(2, OTHER_FIRST_NAME, OTHER_LAST_NAME, OTHER_PHONE, EMAIL);
 
@@ -156,7 +156,7 @@ class ContactRepositoryTest {
     @Test
     void delete_removesContact() {
         addAlex();
-        addSam();
+        addAlice();
 
         assertTrue(repository.delete(1));
         assertTrue(repository.findById(1).isEmpty());

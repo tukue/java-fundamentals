@@ -15,8 +15,8 @@ class ContactServiceTest {
     private static final String EMAIL_DOMAIN = "example.com";
     private static final String EMAIL = emailFor(FIRST_NAME, LAST_NAME);
 
-    private static final String OTHER_FIRST_NAME = "Sam";
-    private static final String OTHER_LAST_NAME = "Taylor";
+    private static final String OTHER_FIRST_NAME = "Alice";
+    private static final String OTHER_LAST_NAME = "Bob";
     private static final String OTHER_PHONE = "0987654321";
     private static final String OTHER_EMAIL = emailFor(OTHER_FIRST_NAME, OTHER_LAST_NAME);
 
