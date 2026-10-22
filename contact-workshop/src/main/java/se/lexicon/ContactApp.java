@@ -80,11 +80,19 @@ public class ContactApp {
     }
 
     private void addContact() {
-        var input = promptContact("Add contact");
-        if (input == null) {
-            return;
+        System.out.println("Add contact");
+        while (true) {
+            var input = promptContact();
+            if (input == null) {
+                return;
+            }
+            var result = service.add(input[0], input[1], input[2], input[3]);
+            if (result.ok()) {
+                printResult(result);
+                return;
+            }
+            printInvalid(result);
         }
-        printResult(service.add(input[0], input[1], input[2], input[3]));
     }
 
     private void searchContacts() {
@@ -110,12 +118,19 @@ public class ContactApp {
         System.out.println("Current: " + current);
         System.out.println("(leave a field empty to keep the current value)");
 
-        var firstName = promptValue("First name [" + current.getFirstName() + "]: ", current.getFirstName());
-        var lastName = promptValue("Last name [" + current.getLastName() + "]: ", current.getLastName());
-        var phone = promptValue("Phone [" + current.getPhone() + "]: ", current.getPhone());
-        var email = promptValue("Email [" + current.getEmail() + "]: ", current.getEmail());
+        while (true) {
+            var firstName = promptValue("First name [" + current.getFirstName() + "]: ", current.getFirstName());
+            var lastName = promptValue("Last name [" + current.getLastName() + "]: ", current.getLastName());
+            var phone = promptValue("Phone [" + current.getPhone() + "]: ", current.getPhone());
+            var email = promptValue("Email [" + current.getEmail() + "]: ", current.getEmail());
 
-        printResult(service.update(id, firstName, lastName, phone, email));
+            var result = service.update(id, firstName, lastName, phone, email);
+            if (result.ok()) {
+                printResult(result);
+                return;
+            }
+            printInvalid(result);
+        }
     }
 
     private void deleteContact() {
@@ -133,8 +148,7 @@ public class ContactApp {
         printResult(service.delete(id));
     }
 
-    private String[] promptContact(String title) {
-        System.out.println(title);
+    private String[] promptContact() {
         var firstName = readLine("First name: ");
         if (firstName == null) {
             return null;
@@ -183,6 +197,10 @@ public class ContactApp {
 
     private void printResult(ContactService.ValidationResult result) {
         System.out.println((result.ok() ? "OK: " : "Error: ") + result.message());
+    }
+
+    private void printInvalid(ContactService.ValidationResult result) {
+        System.out.println("Error: " + result.message() + " Please try again.");
     }
 
     private void printHeader() {

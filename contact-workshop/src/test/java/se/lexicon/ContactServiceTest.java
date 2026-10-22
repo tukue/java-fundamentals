@@ -53,11 +53,89 @@ class ContactServiceTest {
     }
 
     @Test
-    void add_acceptsAnyInputWithoutFormatValidation() {
-        var result = service.add("", "", "", "not-an-email");
+    void add_rejectsBlankFirstName() {
+        var result = service.add("  ", LAST_NAME, PHONE, EMAIL);
+
+        assertFalse(result.ok());
+        assertTrue(result.message().contains("First name"));
+        assertTrue(service.list().isEmpty());
+    }
+
+    @Test
+    void add_rejectsBlankLastName() {
+        var result = service.add(FIRST_NAME, "", PHONE, EMAIL);
+
+        assertFalse(result.ok());
+        assertTrue(result.message().contains("Last name"));
+        assertTrue(service.list().isEmpty());
+    }
+
+    @Test
+    void add_rejectsNamesThatAreOnlyNumbers() {
+        var result = service.add("1234", "5678", PHONE, EMAIL);
+
+        assertFalse(result.ok());
+        assertTrue(result.message().contains("text"));
+        assertTrue(service.list().isEmpty());
+    }
+
+    @Test
+    void add_rejectsBlankPhone() {
+        var result = service.add(FIRST_NAME, LAST_NAME, "  ", EMAIL);
+
+        assertFalse(result.ok());
+        assertTrue(result.message().contains("Phone"));
+        assertTrue(service.list().isEmpty());
+    }
+
+    @Test
+    void add_rejectsPhoneWithLetters() {
+        var result = service.add(FIRST_NAME, LAST_NAME, "123-456-abc", EMAIL);
+
+        assertFalse(result.ok());
+        assertTrue(result.message().toLowerCase().contains("digits"));
+        assertTrue(service.list().isEmpty());
+    }
+
+    @Test
+    void add_rejectsPhoneWithSpacesOrSymbols() {
+        var result = service.add(FIRST_NAME, LAST_NAME, "+46 123 456", EMAIL);
+
+        assertFalse(result.ok());
+        assertTrue(result.message().toLowerCase().contains("digits"));
+        assertTrue(service.list().isEmpty());
+    }
+
+    @Test
+    void add_stripsSurroundingWhitespaceFromValidInput() {
+        var result = service.add("  " + FIRST_NAME + " ", LAST_NAME, " " + PHONE + " ", EMAIL);
 
         assertTrue(result.ok());
-        assertEquals(1, service.list().size());
+        var stored = service.find(1).orElseThrow();
+        assertEquals(FIRST_NAME, stored.getFirstName());
+        assertEquals(PHONE, stored.getPhone());
+    }
+
+    @Test
+    void update_rejectsInvalidPhone() {
+        service.add(FIRST_NAME, LAST_NAME, PHONE, EMAIL);
+
+        var result = service.update(1, FIRST_NAME, LAST_NAME, "not-a-number", EMAIL);
+
+        assertFalse(result.ok());
+        assertTrue(result.message().toLowerCase().contains("digits"));
+        assertEquals(PHONE, service.find(1).orElseThrow().getPhone());
+    }
+
+    @Test
+    void update_rejectsBlankName() {
+        service.add(FIRST_NAME, LAST_NAME, PHONE, EMAIL);
+
+        var result = service.update(1, "", LAST_NAME, PHONE, EMAIL);
+
+        assertFalse(result.ok());
+        assertTrue(result.message().contains("First name"));
+        assertEquals(FIRST_NAME, service.find(1).orElseThrow().getFirstName());
     }
 
     @Test
