@@ -14,6 +14,16 @@ mvn -f contact-workshop/pom.xml compile
 java -cp contact-workshop/target/classes se.lexicon.ContactApp
 ```
 
+## Data entry rules
+
+Enforced by `ContactService` before anything is stored:
+
+- First and last name – required, and must contain at least one letter (a name is text, not a number)
+- Phone – required, digits only (`0`–`9`)
+- E-mail – must be unique (the format itself is not checked)
+
+Invalid input is reported with a message and the form is asked again.
+
 ## Menu
 
 ```
@@ -42,8 +52,10 @@ contact-workshop/
     │   ├── Contact.java            # data carrier
     │   ├── ContactRepository.java  # storage + ids + unique email
     │   ├── ContactService.java     # validation + business rules
+    │   ├── ContactFileStore.java   # save/load the app state to contacts.txt
     │   └── ContactApp.java         # menu + console I/O
     └── test/java/se/lexicon/
         ├── ContactRepositoryTest.java
-        └── ContactServiceTest.java
+        ├── ContactServiceTest.java
+        └── ContactFileStoreTest.java
 ```

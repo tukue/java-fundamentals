@@ -170,4 +170,27 @@ class ContactRepositoryTest {
         assertFalse(repository.delete(99));
         assertEquals(1, repository.findAll().size());
     }
+
+    @Test
+    void loadAll_preservesIdsAndContinuesNumberingAfterMax() {
+        repository.loadAll(java.util.List.of(
+                new Contact(7, FIRST_NAME, LAST_NAME, PHONE, "loaded@example.com"),
+                new Contact(3, OTHER_FIRST_NAME, OTHER_LAST_NAME, OTHER_PHONE, OTHER_EMAIL)));
+
+        assertEquals(2, repository.findAll().size());
+        assertEquals(7, repository.findById(7).orElseThrow().getId());
+
+        var added = addAlex();
+        assertEquals(8, added.getId());
+    }
+
+    @Test
+    void loadAll_withEmptyListClearsExistingContacts() {
+        addAlex();
+
+        repository.loadAll(java.util.List.of());
+
+        assertTrue(repository.findAll().isEmpty());
+        assertEquals(1, addAlice().getId());
+    }
 }
