@@ -59,3 +59,23 @@ contact-workshop/
         ├── ContactServiceTest.java
         └── ContactFileStoreTest.java
 ```
+
+## CI/CD
+
+The `Contact workshop CI/CD` GitHub Actions workflow runs on pushes and pull requests
+that change `contact-workshop/` or its workflow, and can also be run manually.
+It uses Java 25 and Maven to run `clean verify`, then uploads the test reports
+and, after a successful build, the executable application JAR.
+
+Download the application artifact from the workflow run, unzip it, and run with Java 25:
+
+```bash
+java -jar contact-workshop-1.0-SNAPSHOT.jar
+```
+
+The app saves `contacts.txt` in the directory where it is run. Delivery is through
+workflow artifacts; no hosted deployment or release publishing is configured.
+
+Challenge 2 tests cover successful and rejected repository/service operations,
+null required fields, numeric names, trimming, leading-zero phone numbers,
+keeping a contact's own email during update, and avoiding ID reuse after deletion.

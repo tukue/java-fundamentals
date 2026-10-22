@@ -2,6 +2,10 @@ package se.lexicon;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.Arguments;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -108,12 +112,81 @@ class ContactServiceTest {
 
     @Test
     void add_stripsSurroundingWhitespaceFromValidInput() {
-        var result = service.add("  " + FIRST_NAME + " ", LAST_NAME, " " + PHONE + " ", EMAIL);
+        var result = service.add(" " + FIRST_NAME + " ", " " + LAST_NAME + " ",
+                " " + OTHER_PHONE + " ", " " + EMAIL + " ");
 
         assertTrue(result.ok());
         var stored = service.find(1).orElseThrow();
         assertEquals(FIRST_NAME, stored.getFirstName());
-        assertEquals(PHONE, stored.getPhone());
+        assertEquals(LAST_NAME, stored.getLastName());
+        assertEquals(OTHER_PHONE, stored.getPhone());
+        assertEquals(EMAIL, stored.getEmail());
+    }
+
+    static Stream<Arguments> invalidContactFields() {
+        return Stream.of(
+                Arguments.of(null, LAST_NAME, PHONE, "First name is required"),
+                Arguments.of(FIRST_NAME, null, PHONE, "Last name is required"),
+                Arguments.of(FIRST_NAME, LAST_NAME, null, "Phone number is required"),
+                Arguments.of("123", LAST_NAME, PHONE, "First name must be text, not numbers"),
+                Arguments.of(FIRST_NAME, "123", PHONE, "Last name must be text, not numbers"),
+                Arguments.of(FIRST_NAME, " ", PHONE, "Last name is required"),
+                Arguments.of(FIRST_NAME, LAST_NAME, " ", "Phone number is required"));
+    }
+
+    @ParameterizedTest
+    @MethodSource("invalidContactFields")
+    void add_rejectsInvalidFieldsWithoutStoringContact(
+            String first, String last, String phone, String error) {
+        var result = service.add(first, last, phone, EMAIL);
+
+        assertFalse(result.ok());
+        assertEquals(error, result.message());
+        assertTrue(service.list().isEmpty());
+    }
+
+    @ParameterizedTest
+    @MethodSource("invalidContactFields")
+    void update_rejectsInvalidFieldsWithoutChangingContact(
+            String first, String last, String phone, String error) {
+        assertTrue(service.add(FIRST_NAME, LAST_NAME, PHONE, EMAIL).ok());
+        var original = service.find(1).orElseThrow();
+
+        var result = service.update(1, first, last, phone, OTHER_EMAIL);
+
+        assertFalse(result.ok());
+        assertEquals(error, result.message());
+        assertEquals(1, service.list().size());
+        assertEquals(original, service.find(1).orElseThrow());
+    }
+
+    @Test
+    void update_keepsOwnEmailAndTrimsAllFields() {
+        assertTrue(service.add(FIRST_NAME, LAST_NAME, PHONE, EMAIL).ok());
+        assertTrue(service.add(OTHER_FIRST_NAME, OTHER_LAST_NAME, OTHER_PHONE, OTHER_EMAIL).ok());
+
+        var result = service.update(1, " " + OTHER_FIRST_NAME + " ", " " + OTHER_LAST_NAME + " ",
+                " " + OTHER_PHONE + " ", " " + EMAIL + " ");
+
+        assertTrue(result.ok());
+        var stored = service.find(1).orElseThrow();
+        assertEquals(OTHER_FIRST_NAME, stored.getFirstName());
+        assertEquals(OTHER_LAST_NAME, stored.getLastName());
+        assertEquals(OTHER_PHONE, stored.getPhone());
+        assertEquals(EMAIL, stored.getEmail());
+        assertEquals(OTHER_EMAIL, service.find(2).orElseThrow().getEmail());
+    }
+
+    @Test
+    void add_rejectsDuplicateEmailWithSurroundingWhitespace() {
+        assertTrue(service.add(FIRST_NAME, LAST_NAME, PHONE, EMAIL).ok());
+
+        var result = service.add(OTHER_FIRST_NAME, OTHER_LAST_NAME, OTHER_PHONE,
+                " " + EMAIL.toUpperCase() + " ");
+
+        assertFalse(result.ok());
+        assertEquals(1, service.list().size());
+        assertEquals(EMAIL, service.find(1).orElseThrow().getEmail());
     }
 
     @Test
