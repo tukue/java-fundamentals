@@ -11,6 +11,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ContactFileStoreTest {
 
@@ -61,11 +62,11 @@ class ContactFileStoreTest {
     @Test
     void load_skipsMalformedLines() throws IOException {
         var file = tempDir.resolve("contacts.txt");
-        Files.writeString(file, """
-                1\tAlex\tSmith\t1234567890\talex.smith@example.com
-                not-a-contact-line
-                2\tAlice\tBob\t0987654321\talice.bob@example.com
-                """, StandardCharsets.UTF_8);
+        Files.writeString(file,
+                "1\tAlex\tSmith\t1234567890\talex.smith@example.com\n" +
+                "not-a-contact-line\n" +
+                "2\tAlice\tBob\t0987654321\talice.bob@example.com\n",
+                StandardCharsets.UTF_8);
         var store = new ContactFileStore(file);
 
         var loaded = store.load();
@@ -73,6 +74,25 @@ class ContactFileStoreTest {
         assertEquals(2, loaded.size());
         assertEquals(FIRST_NAME, loaded.get(0).getFirstName());
         assertEquals(OTHER_FIRST_NAME, loaded.get(1).getFirstName());
+    }
+
+    @Test
+    void save_rejectsInvalidFieldsWithoutOverwritingFile() throws IOException {
+        var store = new ContactFileStore(tempDir.resolve("contacts.txt"));
+        var valid = contact(1, FIRST_NAME, LAST_NAME, PHONE, EMAIL);
+        store.save(List.of(valid));
+        var previousContents = Files.readString(store.getFile());
+
+        for (var separator : List.of("\t", "\n", "\r")) {
+            for (int field = 0; field < 4; field++) {
+                var values = new String[]{FIRST_NAME, LAST_NAME, PHONE, EMAIL};
+                values[field] += separator + "extra";
+                var invalid = contact(2, values[0], values[1], values[2], values[3]);
+
+                assertThrows(IllegalArgumentException.class, () -> store.save(List.of(valid, invalid)));
+                assertEquals(previousContents, Files.readString(store.getFile()));
+            }
+        }
     }
 
     @Test

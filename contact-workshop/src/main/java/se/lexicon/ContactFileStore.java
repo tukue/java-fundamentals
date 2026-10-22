@@ -73,6 +73,13 @@ public class ContactFileStore {
     }
 
     private String format(Contact contact) {
+        var fields = List.of(contact.getFirstName(), contact.getLastName(),
+                contact.getPhone(), contact.getEmail());
+        for (var field : fields) {
+            if (field.contains(DELIMITER) || field.contains("\n") || field.contains("\r")) {
+                throw new IllegalArgumentException("Contact fields must not contain tabs or line breaks");
+            }
+        }
         return String.join(DELIMITER,
                 String.valueOf(contact.getId()),
                 contact.getFirstName(),

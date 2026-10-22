@@ -52,8 +52,9 @@ public class ContactApp {
     }
 
     private void saveContacts() {
-        fileStore.save(repository.findAll());
-        System.out.println("Saved " + repository.findAll().size() + " contact(s) to "
+        var allContacts = repository.findAll();
+        fileStore.save(allContacts);
+        System.out.println("Saved " + allContacts.size() + " contact(s) to "
                 + fileStore.getFile().getFileName());
     }
 
