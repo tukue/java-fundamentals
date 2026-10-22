@@ -9,6 +9,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ContactServiceTest {
 
+    private static final String FIRST_NAME = "Alex";
+    private static final String LAST_NAME = "Smith";
+    private static final String PHONE = "1234567890";
+    private static final String EMAIL_DOMAIN = "example.com";
+    private static final String EMAIL = emailFor(FIRST_NAME, LAST_NAME);
+
+    private static final String OTHER_FIRST_NAME = "Sam";
+    private static final String OTHER_LAST_NAME = "Taylor";
+    private static final String OTHER_PHONE = "0987654321";
+    private static final String OTHER_EMAIL = emailFor(OTHER_FIRST_NAME, OTHER_LAST_NAME);
+
+    private static String emailFor(String firstName, String lastName) {
+        return firstName.toLowerCase() + "." + lastName.toLowerCase() + "@" + EMAIL_DOMAIN;
+    }
+
     private ContactService service;
 
     @BeforeEach
@@ -18,19 +33,19 @@ class ContactServiceTest {
 
     @Test
     void add_returnsOkAndContactBecomesListed() {
-        var result = service.add("Anna", "Andersson", "070-123 4567", "anna@example.com");
+        var result = service.add(FIRST_NAME, LAST_NAME, PHONE, EMAIL);
 
         assertTrue(result.ok());
         assertTrue(result.message().contains("1"));
         assertEquals(1, service.list().size());
-        assertTrue(service.search("anna").size() == 1);
+        assertEquals(1, service.search("alex").size());
     }
 
     @Test
     void add_rejectsDuplicateEmail() {
-        service.add("Anna", "Andersson", "070-123 4567", "anna@example.com");
+        service.add(FIRST_NAME, LAST_NAME, PHONE, EMAIL);
 
-        var result = service.add("Bo", "Bengtsson", "070-987 6543", "ANNA@example.com");
+        var result = service.add(OTHER_FIRST_NAME, OTHER_LAST_NAME, OTHER_PHONE, EMAIL.toUpperCase());
 
         assertFalse(result.ok());
         assertTrue(result.message().toLowerCase().contains("already in use"));
@@ -47,19 +62,23 @@ class ContactServiceTest {
 
     @Test
     void update_returnsOkAndAppliesChanges() {
-        service.add("Anna", "Andersson", "070-123 4567", "anna@example.com");
+        service.add(FIRST_NAME, LAST_NAME, PHONE, EMAIL);
 
-        var result = service.update(1, "Anna", "Lindqvist", "070-000 0000", "anna.l@example.com");
+        var result = service.update(1, OTHER_FIRST_NAME, OTHER_LAST_NAME, OTHER_PHONE, OTHER_EMAIL);
 
         assertTrue(result.ok());
+
         var stored = service.find(1).orElseThrow();
-        assertEquals("Lindqvist", stored.getLastName());
         assertEquals(1, stored.getId());
+        assertEquals(OTHER_FIRST_NAME, stored.getFirstName());
+        assertEquals(OTHER_LAST_NAME, stored.getLastName());
+        assertEquals(OTHER_PHONE, stored.getPhone());
+        assertEquals(OTHER_EMAIL, stored.getEmail());
     }
 
     @Test
     void update_failsForUnknownId() {
-        var result = service.update(42, "Ghost", "Rider", "070-000 0000", "ghost@example.com");
+        var result = service.update(42, FIRST_NAME, LAST_NAME, PHONE, EMAIL);
 
         assertFalse(result.ok());
         assertTrue(result.message().contains("No contact with id 42"));
@@ -67,19 +86,19 @@ class ContactServiceTest {
 
     @Test
     void update_failsWhenEmailBelongsToAnotherContact() {
-        service.add("Anna", "Andersson", "070-123 4567", "anna@example.com");
-        service.add("Bo", "Bengtsson", "070-987 6543", "bo@example.com");
+        service.add(FIRST_NAME, LAST_NAME, PHONE, EMAIL);
+        service.add(OTHER_FIRST_NAME, OTHER_LAST_NAME, OTHER_PHONE, OTHER_EMAIL);
 
-        var result = service.update(2, "Bo", "Bengtsson", "070-987 6543", "anna@example.com");
+        var result = service.update(2, OTHER_FIRST_NAME, OTHER_LAST_NAME, OTHER_PHONE, EMAIL);
 
         assertFalse(result.ok());
         assertTrue(result.message().toLowerCase().contains("already in use"));
-        assertEquals("bo@example.com", service.find(2).orElseThrow().getEmail());
+        assertEquals(OTHER_EMAIL, service.find(2).orElseThrow().getEmail());
     }
 
     @Test
     void delete_removesContactAndReturnsOk() {
-        service.add("Anna", "Andersson", "070-123 4567", "anna@example.com");
+        service.add(FIRST_NAME, LAST_NAME, PHONE, EMAIL);
 
         var result = service.delete(1);
 
@@ -103,7 +122,7 @@ class ContactServiceTest {
 
     @Test
     void search_returnsEmptyListWhenNothingMatches() {
-        service.add("Anna", "Andersson", "070-123 4567", "anna@example.com");
+        service.add(FIRST_NAME, LAST_NAME, PHONE, EMAIL);
 
         assertTrue(service.search("zzz").isEmpty());
     }

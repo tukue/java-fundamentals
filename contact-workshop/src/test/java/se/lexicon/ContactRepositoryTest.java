@@ -11,6 +11,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ContactRepositoryTest {
 
+    private static final String FIRST_NAME = "Alex";
+    private static final String LAST_NAME = "Smith";
+    private static final String PHONE = "1234567890";
+    private static final String EMAIL_DOMAIN = "example.com";
+    private static final String EMAIL = emailFor(FIRST_NAME, LAST_NAME);
+
+    private static final String OTHER_FIRST_NAME = "Sam";
+    private static final String OTHER_LAST_NAME = "Taylor";
+    private static final String OTHER_PHONE = "0987654321";
+    private static final String OTHER_EMAIL = emailFor(OTHER_FIRST_NAME, OTHER_LAST_NAME);
+
+    private static String emailFor(String firstName, String lastName) {
+        return firstName.toLowerCase() + "." + lastName.toLowerCase() + "@" + EMAIL_DOMAIN;
+    }
+
     private ContactRepository repository;
 
     @BeforeEach
@@ -22,24 +37,37 @@ class ContactRepositoryTest {
         return repository.add(first, last, phone, email);
     }
 
+    private Contact addAlex() {
+        return add(FIRST_NAME, LAST_NAME, PHONE, EMAIL);
+    }
+
+    private Contact addSam() {
+        return add(OTHER_FIRST_NAME, OTHER_LAST_NAME, OTHER_PHONE, OTHER_EMAIL);
+    }
+
     @Test
     void add_storesContactAndAssignsSequentialIds() {
-        var first = add("Anna", "Andersson", "070-123 4567", "anna@example.com");
-        var second = add("Bo", "Bengtsson", "070-987 6543", "bo@example.com");
+        var first = addAlex();
+        var second = addSam();
 
         assertNotNull(first);
         assertNotNull(second);
         assertEquals(1, first.getId());
         assertEquals(2, second.getId());
         assertEquals(2, repository.findAll().size());
-        assertEquals("Anna", repository.findById(1).orElseThrow().getFirstName());
+
+        var stored = repository.findById(1).orElseThrow();
+        assertEquals(FIRST_NAME, stored.getFirstName());
+        assertEquals(LAST_NAME, stored.getLastName());
+        assertEquals(PHONE, stored.getPhone());
+        assertEquals(EMAIL, stored.getEmail());
     }
 
     @Test
     void add_rejectsDuplicateEmail() {
-        assertNotNull(add("Anna", "Andersson", "070-123 4567", "anna@example.com"));
+        assertNotNull(addAlex());
 
-        var duplicate = add("Anna", "Other", "070-000 0000", "ANNA@example.com");
+        var duplicate = add(OTHER_FIRST_NAME, OTHER_LAST_NAME, OTHER_PHONE, EMAIL.toUpperCase());
 
         assertNull(duplicate);
         assertEquals(1, repository.findAll().size());
@@ -47,12 +75,12 @@ class ContactRepositoryTest {
 
     @Test
     void findById_returnsContactWhenIdExists() {
-        add("Anna", "Andersson", "070-123 4567", "anna@example.com");
+        addAlex();
 
         var found = repository.findById(1);
 
         assertTrue(found.isPresent());
-        assertEquals("Andersson", found.get().getLastName());
+        assertEquals(FIRST_NAME, found.get().getFirstName());
     }
 
     @Test
@@ -62,51 +90,53 @@ class ContactRepositoryTest {
 
     @Test
     void findAll_keepsInsertionOrder() {
-        add("Anna", "Andersson", "070-1", "anna@example.com");
-        add("Bo", "Bengtsson", "070-2", "bo@example.com");
+        addAlex();
+        addSam();
 
         var all = repository.findAll();
 
         assertEquals(2, all.size());
-        assertEquals("Anna", all.get(0).getFirstName());
-        assertEquals("Bo", all.get(1).getFirstName());
+        assertEquals(FIRST_NAME, all.get(0).getFirstName());
+        assertEquals(OTHER_FIRST_NAME, all.get(1).getFirstName());
     }
 
     @Test
     void search_matchesFirstNameLastNameAndPhoneIgnoringCase() {
-        add("Anna", "Andersson", "070-123 4567", "anna@example.com");
-        add("Bo", "Bengtsson", "070-987 6543", "bo@example.com");
+        addAlex();
+        addSam();
 
-        assertEquals(1, repository.search("anna").size());
-        assertEquals(1, repository.search("ANDERSSON").size());
-        assertEquals(1, repository.search("987").size());
+        assertEquals(1, repository.search("alex").size());
+        assertEquals(1, repository.search("TAYLOR").size());
+        assertEquals(1, repository.search("12345").size());
         assertEquals(2, repository.search("").size());
     }
 
     @Test
     void search_returnsEmptyListWhenNothingMatches() {
-        add("Anna", "Andersson", "070-123 4567", "anna@example.com");
+        addAlex();
 
         assertTrue(repository.search("zzz").isEmpty());
     }
 
     @Test
     void update_replacesFieldsAndKeepsId() {
-        add("Anna", "Andersson", "070-123 4567", "anna@example.com");
+        addAlex();
 
-        var updated = repository.update(1, "Anna", "Lindqvist", "070-000 0000", "anna.l@example.com");
+        var updated = repository.update(1, OTHER_FIRST_NAME, OTHER_LAST_NAME, OTHER_PHONE, OTHER_EMAIL);
 
         assertTrue(updated.isPresent());
         assertEquals(1, updated.get().getId());
+
         var stored = repository.findById(1).orElseThrow();
-        assertEquals("Lindqvist", stored.getLastName());
-        assertEquals("070-000 0000", stored.getPhone());
-        assertEquals("anna.l@example.com", stored.getEmail());
+        assertEquals(OTHER_FIRST_NAME, stored.getFirstName());
+        assertEquals(OTHER_LAST_NAME, stored.getLastName());
+        assertEquals(OTHER_PHONE, stored.getPhone());
+        assertEquals(OTHER_EMAIL, stored.getEmail());
     }
 
     @Test
     void update_returnsEmptyForUnknownId() {
-        var updated = repository.update(42, "Ghost", "Rider", "070-000 0000", "ghost@example.com");
+        var updated = repository.update(42, FIRST_NAME, LAST_NAME, PHONE, EMAIL);
 
         assertTrue(updated.isEmpty());
         assertTrue(repository.findAll().isEmpty());
@@ -114,19 +144,19 @@ class ContactRepositoryTest {
 
     @Test
     void update_rejectsEmailAlreadyUsedByAnotherContact() {
-        add("Anna", "Andersson", "070-123 4567", "anna@example.com");
-        add("Bo", "Bengtsson", "070-987 6543", "bo@example.com");
+        addAlex();
+        addSam();
 
-        var updated = repository.update(2, "Bo", "Bengtsson", "070-987 6543", "anna@example.com");
+        var updated = repository.update(2, OTHER_FIRST_NAME, OTHER_LAST_NAME, OTHER_PHONE, EMAIL);
 
         assertTrue(updated.isEmpty());
-        assertEquals("bo@example.com", repository.findById(2).orElseThrow().getEmail());
+        assertEquals(OTHER_EMAIL, repository.findById(2).orElseThrow().getEmail());
     }
 
     @Test
     void delete_removesContact() {
-        add("Anna", "Andersson", "070-123 4567", "anna@example.com");
-        add("Bo", "Bengtsson", "070-987 6543", "bo@example.com");
+        addAlex();
+        addSam();
 
         assertTrue(repository.delete(1));
         assertTrue(repository.findById(1).isEmpty());
@@ -135,7 +165,7 @@ class ContactRepositoryTest {
 
     @Test
     void delete_returnsFalseForUnknownIdAndLeavesListUntouched() {
-        add("Anna", "Andersson", "070-123 4567", "anna@example.com");
+        addAlex();
 
         assertFalse(repository.delete(99));
         assertEquals(1, repository.findAll().size());
