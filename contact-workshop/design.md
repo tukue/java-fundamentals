@@ -27,11 +27,11 @@ Console app for managing contacts: add, view, search, update and delete.
 **Constraints – invalid states that must never be allowed**
 
 1. Ids are auto-generated, never reused, never duplicated
-2. First and last name must be non-blank
-3. Email must match `^[\w.+-]+@[\w-]+\.[\w.]+$`
-4. Phone: optional `+`, then 5–15 digits/spaces/dashes (`^\+?[\d\s-]{5,15}$`)
-5. Email must be unique – enforced by the repository (storage invariant)
-6. Update/delete require an id that exists
+2. Email must be unique – enforced by the repository (storage invariant)
+3. Update/delete require an id that exists
+
+> Input validation (non-blank names, email/phone format) is disabled for now and can be
+> re-introduced as an extension. The service only guards the rules above.
 
 **Code organisation – separation of concerns**
 
@@ -39,7 +39,7 @@ Console app for managing contacts: add, view, search, update and delete.
 |-------|----------------|-----------|
 | `Contact` | Data carrier only | SRP |
 | `ContactRepository` | Storage, id generation, unique-email invariant | SRP, storage isolated |
-| `ContactService` | Validation + orchestration of business rules | Business rules isolated |
+| `ContactService` | Orchestration + business rules (unique email, id exists) | Business rules isolated |
 | `ContactApp` | Menu loop and `Scanner` I/O, nothing else | UI isolated |
 
 The UI never touches the map directly and the repository never prints – each operation has one clear home.
@@ -55,9 +55,9 @@ flowchart TD
     List --> Menu
 
     Choice -->|2| AddName[Prompt first name, last name, phone, email]
-    AddName --> AddVal{Service.add valid?}
-    AddVal -->|No| Err1[Print validation error] --> Menu
-    AddVal -->|Yes| AddSave[Print confirmation with new id] --> Menu
+    AddName --> AddRes{Service.add ok?}
+    AddRes -->|No| Err1[Print error - duplicate email] --> Menu
+    AddRes -->|Yes| AddSave[Print confirmation with new id] --> Menu
 
     Choice -->|3| Search[Prompt search text]
     Search --> Found{Matches?}
@@ -68,9 +68,9 @@ flowchart TD
     UpdId --> Exists1{Contact exists?}
     Exists1 -->|No| Err4[Print 'no contact with id'] --> Menu
     Exists1 -->|Yes| UpdFields[Show current values - prompt new values]
-    UpdFields --> UpdVal{Service.update valid?}
-    UpdVal -->|No| Err5[Print validation error] --> Menu
-    UpdVal -->|Yes| UpdSave[Print confirmation] --> Menu
+    UpdFields --> UpdRes{Service.update ok?}
+    UpdRes -->|No| Err5[Print error - duplicate email] --> Menu
+    UpdRes -->|Yes| UpdSave[Print confirmation] --> Menu
 
     Choice -->|5| DelId[Prompt id]
     DelId --> Exists2{Contact exists?}
@@ -118,6 +118,7 @@ classDiagram
         +add(first, last, phone, email) ValidationResult
         +update(id, first, last, phone, email) ValidationResult
         +delete(id) ValidationResult
+        +find(id) Optional~Contact~
         +list() List~Contact~
         +search(query) List~Contact~
         -validate(first, last, phone, email, excludeId) String
@@ -160,12 +161,15 @@ classDiagram
 | `search` (repo) | case-insensitive match on name/phone | no match → empty list |
 | `update` (repo) | fields replaced, id kept | unknown id → empty |
 | `delete` (repo) | removed, `findById` empty after | unknown id → `false`, list untouched |
-| `add` (service) | valid input → ok | blank name, bad email, bad phone, duplicate email |
-| `update` (service) | valid → ok | unknown id, invalid email |
+| `add` (service) | valid input → ok | duplicate email → rejected |
+| `update` (service) | valid → ok | unknown id, duplicate email |
 | `delete` (service) | valid → ok | unknown id |
+
+> Format validation (email/phone/blank) is out of scope for now, so no tests cover it.
 
 ## Out of scope (YAGNI – later challenges)
 
+- Input validation (email/phone format, required fields) – deferred for now
 - Challenge 1: sorted output
 - Challenge 3: file export/import (plain text, CSV, Excel)
 - GUI, database, networking
