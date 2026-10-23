@@ -1,5 +1,6 @@
 package se.lexicon;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,7 +13,7 @@ public class ContactService {
     }
 
     public ValidationResult add(String firstName, String lastName, String phone, String email) {
-        var error = validate(firstName, lastName, phone);
+        var error = validate(firstName, lastName, phone, email);
         if (error != null) {
             return new ValidationResult(false, error);
         }
@@ -27,7 +28,7 @@ public class ContactService {
         if (repository.findById(id).isEmpty()) {
             return new ValidationResult(false, "No contact with id " + id);
         }
-        var error = validate(firstName, lastName, phone);
+        var error = validate(firstName, lastName, phone, email);
         if (error != null) {
             return new ValidationResult(false, error);
         }
@@ -58,11 +59,28 @@ public class ContactService {
         return repository.search(query);
     }
 
+    public ImportOutcome importContacts(List<Contact> candidates) {
+        var imported = new ArrayList<Contact>();
+        var warnings = new ArrayList<String>();
+        for (var candidate : candidates) {
+            if (repository.emailExists(candidate.getEmail(), ContactRepository.NO_EXCLUDED_ID)) {
+                warnings.add("Skipped " + candidate.getEmail() + ": email already in use");
+                continue;
+            }
+            var saved = repository.add(candidate.getId(), candidate.getFirstName(),
+                    candidate.getLastName(), candidate.getPhone(), candidate.getEmail());
+            if (saved != null) {
+                imported.add(saved);
+            }
+        }
+        return new ImportOutcome(List.copyOf(imported), List.copyOf(warnings));
+    }
+
     private static String trim(String value) {
         return value == null ? "" : value.trim();
     }
 
-    private static String validate(String firstName, String lastName, String phone) {
+    static String validate(String firstName, String lastName, String phone, String email) {
         var first = trim(firstName);
         if (first.isEmpty()) {
             return "First name is required";
@@ -83,6 +101,18 @@ public class ContactService {
         }
         if (!isAllDigits(number)) {
             return "Phone number must contain digits only";
+        }
+        var address = trim(email);
+        if (address.isEmpty()) {
+            return "Email is required";
+        }
+        if (!address.matches("[^\\s@]+@[^\\s@.]+(?:\\.[^\\s@.]+)+")) {
+            return "Email must have a valid address format";
+        }
+        for (var field : List.of(first, last, address)) {
+            if (field.contains("\t") || field.contains("\n") || field.contains("\r")) {
+                return "Contact fields must not contain tabs or line breaks";
+            }
         }
         return null;
     }

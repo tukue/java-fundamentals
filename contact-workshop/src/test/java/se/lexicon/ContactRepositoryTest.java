@@ -193,4 +193,68 @@ class ContactRepositoryTest {
         assertTrue(repository.findAll().isEmpty());
         assertEquals(1, addAlice().getId());
     }
+    @Test
+    void add_doesNotReuseDeletedId() {
+        var first = addAlex();
+        var second = addAlice();
+        assertTrue(repository.delete(second.getId()));
+
+        var added = addAlice();
+
+        assertNotNull(added);
+        assertEquals(3, added.getId());
+        assertTrue(repository.findById(second.getId()).isEmpty());
+        assertTrue(repository.findById(first.getId()).isPresent());
+    }
+
+    @Test
+    void update_allowsOwnEmailIgnoringCase() {
+        var original = addAlex();
+        addAlice();
+
+        var updated = repository.update(original.getId(), OTHER_FIRST_NAME, LAST_NAME, PHONE,
+                EMAIL.toUpperCase());
+
+        assertTrue(updated.isPresent());
+        assertEquals(original.getId(), updated.orElseThrow().getId());
+        assertEquals(OTHER_FIRST_NAME, repository.findById(original.getId()).orElseThrow().getFirstName());
+        assertEquals(2, repository.findAll().size());
+    }
+
+    @Test
+    void search_trimsQueryAndTreatsNullAsEmpty() {
+        var first = addAlex();
+        var second = addAlice();
+
+        assertEquals(java.util.List.of(first), repository.search("  ALEX  "));
+        assertEquals(java.util.List.of(first, second), repository.search(null));
+    }
+
+    @Test
+    void add_keepsPreferredIdWhenFreeAndGeneratesWhenTaken() {
+        var preferred = repository.add(5, FIRST_NAME, LAST_NAME, PHONE, EMAIL);
+        assertNotNull(preferred);
+        assertEquals(5, preferred.getId());
+
+        var taken = repository.add(5, OTHER_FIRST_NAME, OTHER_LAST_NAME, OTHER_PHONE, OTHER_EMAIL);
+        assertNotNull(taken);
+        assertEquals(6, taken.getId());
+
+        var later = repository.add(9, "Kim", "Lee", "111", "kim@example.com");
+        assertNotNull(later);
+        assertEquals(9, later.getId());
+
+        assertEquals(10, repository.add("Sam", "Taylor", "222", "sam@example.com").getId());
+    }
+
+    @Test
+    void add_rejectsDuplicateEmailEvenWithPreferredId() {
+        addAlex();
+
+        var duplicate = repository.add(9, OTHER_FIRST_NAME, OTHER_LAST_NAME, OTHER_PHONE, EMAIL);
+
+        assertNull(duplicate);
+        assertEquals(1, repository.findAll().size());
+    }
+
 }

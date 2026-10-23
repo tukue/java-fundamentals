@@ -15,10 +15,22 @@ public class ContactRepository {
     private int nextId = 1;
 
     public Contact add(String firstName, String lastName, String phone, String email) {
+        return add(0, firstName, lastName, phone, email);
+    }
+
+    /**
+     * Keeps the preferred id when it is a free positive number,
+     * otherwise a new id is generated. Ids are never reused.
+     */
+    public Contact add(int preferredId, String firstName, String lastName, String phone, String email) {
         if (emailExists(email, NO_EXCLUDED_ID)) {
             return null;
         }
-        var contact = new Contact(nextId++, firstName, lastName, phone, email);
+        var id = preferredId > 0 && !contacts.containsKey(preferredId) ? preferredId : nextId++;
+        if (id >= nextId) {
+            nextId = id + 1;
+        }
+        var contact = new Contact(id, firstName, lastName, phone, email);
         contacts.put(contact.getId(), contact);
         return contact;
     }

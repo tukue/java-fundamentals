@@ -43,12 +43,16 @@ stored. The service is the single gatekeeper – the UI does not validate on its
 | V4 | last name | must contain at least one letter | `Last name must be text, not numbers` |
 | V5 | phone | not blank after trim | `Phone number is required` |
 | V6 | phone | digits only (`0`–`9`) – no spaces, `+`, `-` or letters | `Phone number must contain digits only` |
+| V7 | email | required after trim | `Email is required` |
+| V8 | email | basic `local@domain.suffix` shape, no whitespace | `Email must have a valid address format` |
+| V9 | names/email | no tabs or line breaks | `Contact fields must not contain tabs or line breaks` |
 
 - Validation runs on the trimmed values, so `"  "` is blank and `" Alex "` is stored as `Alex`.
 - The app re-prompts the form when the service rejects the input; the service never stores a rejected
   entry and the repository never sees it.
-- Email *format* is deliberately **not** validated – only uniqueness (a storage invariant). Keeping
-  it out avoids a half-finished e-mail rule set (RFC 5322 is not a regex).
+- Email is required and checked for a basic `local@domain.suffix` shape without whitespace.
+  This is a basic input check, not full RFC 5322 validation or deliverability verification.
+- Names and email must not contain tabs or line breaks so they can be persisted safely.
 - Phone is kept as a `String` even though it only holds digits: a phone number is an identifier, not
   a quantity, so it must not lose leading zeros or be turned into an arithmetic value.
 
@@ -143,7 +147,7 @@ classDiagram
         +find(id) Optional~Contact~
         +list() List~Contact~
         +search(query) List~Contact~
-        -validate(first, last, phone) String
+        -validate(first, last, phone, email) String
     }
 
     class ValidationResult {
@@ -158,7 +162,7 @@ classDiagram
         -Path file
         +getFile() Path
         +load() List~Contact~
-        +save(contacts) void
+        +save(contacts) boolean
     }
 
     class ContactApp {
@@ -200,12 +204,14 @@ classDiagram
 | `delete` (service) | valid → ok | unknown id |
 | validation (service) | valid names + digits-only phone accepted, surrounding whitespace trimmed | blank name, digits-only name, blank phone, phone with letters/spaces/symbols → rejected, nothing stored |
 
-> Email *format* is still not validated (only uniqueness), so no test covers it.
+> Email tests cover null, blank, malformed and duplicate addresses on add and update.
 > The rules live in `ContactService.validate` and are covered through the service – there is no separate validator class.
 
 ## Challenge 3 – File export/import: the I/O design
 
-*Design first – the code comes after this section.*
+*Design first – the code comes after this section. Implemented in
+`ContactExporter`, `ContactImporter`, `CsvContactExporter`,
+`CsvContactImporter`, `ImportOutcome` and `ContactTransferService`.*
 
 ### Goal
 
@@ -305,13 +311,16 @@ itself, so an export is a read-only operation on the app's state.
 
 ### Test plan for the challenge
 
+*Implemented in `CsvContactExporterTest`, `CsvContactImporterTest`,
+`ContactTransferServiceTest` and the export/import cases in `ContactAppTest`.*
+
 | Case | Expected |
 |------|----------|
 | Export two contacts | File with header + two rows |
-| Name containing a comma | Field quoted: `"Smith, John"` |
+| Name containing a comma | Field quoted: `"Smith, Jr"` |
 | Name containing a quote | Inner quotes doubled |
 | Empty contact list | File with only the header |
-| Export to a missing folder | Error message, no crash |
+| Export to a missing folder | Folder created, or error message with no crash |
 | Import a valid file | The contacts end up in the app with the same fields |
 | Import a row with a bad phone | That row is skipped with a warning, the other rows are imported |
 | Import a file with a missing column | Error message naming the column |
@@ -319,10 +328,15 @@ itself, so an export is a read-only operation on the app's state.
 | Export → import | The same contacts come back (no duplicates – the e-mail check skips them) |
 | Import a file that does not exist | Error message, the contacts in memory are unchanged |
 
+Every validation rule V1–V9 is also asserted on the import path: a row that
+fails any rule is skipped with `Row N: <reason>` and the rest of the file is
+still imported. The rules are the same code – `CsvContactImporter` calls
+`ContactService.validate` (package-private), so the console and the file
+cannot drift apart.
+
 ### Known gaps
 
 - `contacts.txt` is loaded without validation, so a file written before the validation rules existed (or hand-edited) can still hold an invalid contact. The import path is validated, the internal file is not – fixing that means validating on load.
-- The console `add` path only requires the e-mail to be unique, while the importer skips rows with an empty e-mail (in a CSV the e-mail is the identity column). The asymmetry is deliberate for now.
 
 ### Explicitly out of scope for the challenge
 
@@ -333,6 +347,5 @@ itself, so an export is a read-only operation on the app's state.
 ## Out of scope (YAGNI – later challenges)
 
 - Challenge 1: sorted output
-- Challenge 3: file export/import → I/O design documented above, implementation still pending
-- E-mail format validation (only uniqueness is enforced today)
+- Full RFC email validation and deliverability verification
 - GUI, database, networking
