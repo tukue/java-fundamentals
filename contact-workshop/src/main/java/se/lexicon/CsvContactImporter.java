@@ -57,7 +57,8 @@ public class CsvContactImporter implements ContactImporter {
 
     private static Contact toContact(List<String> fields, Map<String, Integer> columns,
                                      int row, List<String> warnings) {
-        var needed = columns.values().stream().mapToInt(Integer::intValue).max().orElse(0);
+        var needed = CsvContactExporter.COLUMNS.stream()
+                .mapToInt(column -> columns.getOrDefault(column, 0)).max().orElse(0);
         if (fields.size() <= needed) {
             warnings.add("Row " + row + ": wrong number of fields");
             return null;

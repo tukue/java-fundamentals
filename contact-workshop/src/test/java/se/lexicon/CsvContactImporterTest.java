@@ -221,4 +221,30 @@ class CsvContactImporterTest {
         assertTrue(outcome.warnings().get(0).startsWith("Row 2:"));
         assertTrue(outcome.warnings().get(0).contains("wrong number of fields"));
     }
+
+    @Test
+    void parse_ignoresExtraHeaderColumnsBeyondTheRequiredFive() {
+        var outcome = importer.parse(csv(
+                "id,firstName,lastName,phone,email,notes",
+                "1,Alex,Smith,1234567890,alex.smith@example.com",
+                "2,Alice,Bob,0987654321,alice.bob@example.com,colleague"));
+
+        assertTrue(outcome.warnings().isEmpty());
+        assertEquals(2, outcome.contacts().size());
+        assertEquals(EMAIL, outcome.contacts().get(0).getEmail());
+        assertEquals(OTHER_EMAIL, outcome.contacts().get(1).getEmail());
+    }
+
+    @Test
+    void parse_mapsRequiredColumnsWhenExtraColumnComesFirst() {
+        var outcome = importer.parse(csv(
+                "notes,id,firstName,lastName,phone,email",
+                "colleague,1,Alex,Smith,1234567890,alex.smith@example.com"));
+
+        assertTrue(outcome.warnings().isEmpty());
+        var contact = outcome.contacts().get(0);
+        assertEquals(1, contact.getId());
+        assertEquals(FIRST_NAME, contact.getFirstName());
+        assertEquals(EMAIL, contact.getEmail());
+    }
 }
