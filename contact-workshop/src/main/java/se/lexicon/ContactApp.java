@@ -1,5 +1,9 @@
 package se.lexicon;
 
+import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.Scanner;
 
 public class ContactApp {
@@ -9,6 +13,7 @@ public class ContactApp {
     private final ContactRepository repository = new ContactRepository();
     private final ContactService service = new ContactService(repository);
     private final ContactFileStore fileStore = new ContactFileStore();
+    private final ContactTransferService transfer = new ContactTransferService(service);
 
     public static void main(String[] args) {
         new ContactApp().runMenu();
@@ -33,6 +38,8 @@ public class ContactApp {
                 case "3" -> searchContacts();
                 case "4" -> updateContact();
                 case "5" -> deleteContact();
+                case "6" -> exportContacts();
+                case "7" -> importContacts();
                 case "0" -> {
                     saveContacts();
                     System.out.println("Goodbye!");
@@ -70,6 +77,8 @@ public class ContactApp {
         System.out.println("3. Search contacts");
         System.out.println("4. Update contact");
         System.out.println("5. Delete contact");
+        System.out.println("6. Export contacts (CSV)");
+        System.out.println("7. Import contacts (CSV)");
         System.out.println("0. Exit");
         System.out.print("Choice: ");
     }
@@ -153,6 +162,44 @@ public class ContactApp {
             return;
         }
         printResult(service.delete(id));
+    }
+
+    private void exportContacts() {
+        var defaultName = "contacts-export-"
+                + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"))
+                + ".csv";
+        var input = readLine("Export path [" + defaultName + "]: ");
+        if (input == null) {
+            return;
+        }
+        var path = withCsvSuffix(input.isEmpty() ? defaultName : input);
+        var contacts = service.list();
+        if (transfer.exportTo(path, contacts)) {
+            System.out.println("Exported " + contacts.size() + " contact(s) to " + path);
+        }
+    }
+
+    private void importContacts() {
+        var input = readLine("Import path: ");
+        if (input == null) {
+            return;
+        }
+        if (input.isEmpty()) {
+            System.out.println("Error: path is required");
+            return;
+        }
+        var outcome = transfer.importFrom(Path.of(input));
+        outcome.warnings().forEach(warning -> System.out.println("Warning: " + warning));
+        System.out.println("Imported " + outcome.contacts().size() + " contact(s)");
+    }
+
+    private static Path withCsvSuffix(String input) {
+        var path = Path.of(input);
+        var name = path.getFileName().toString();
+        if (!name.toLowerCase(Locale.ROOT).endsWith(".csv")) {
+            path = path.resolveSibling(name + ".csv");
+        }
+        return path;
     }
 
     private String[] promptContact() {

@@ -1,5 +1,6 @@
 package se.lexicon;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,11 +59,28 @@ public class ContactService {
         return repository.search(query);
     }
 
+    public ImportOutcome importContacts(List<Contact> candidates) {
+        var imported = new ArrayList<Contact>();
+        var warnings = new ArrayList<String>();
+        for (var candidate : candidates) {
+            if (repository.emailExists(candidate.getEmail(), ContactRepository.NO_EXCLUDED_ID)) {
+                warnings.add("Skipped " + candidate.getEmail() + ": email already in use");
+                continue;
+            }
+            var saved = repository.add(candidate.getId(), candidate.getFirstName(),
+                    candidate.getLastName(), candidate.getPhone(), candidate.getEmail());
+            if (saved != null) {
+                imported.add(saved);
+            }
+        }
+        return new ImportOutcome(List.copyOf(imported), List.copyOf(warnings));
+    }
+
     private static String trim(String value) {
         return value == null ? "" : value.trim();
     }
 
-    private static String validate(String firstName, String lastName, String phone, String email) {
+    static String validate(String firstName, String lastName, String phone, String email) {
         var first = trim(firstName);
         if (first.isEmpty()) {
             return "First name is required";

@@ -53,7 +53,7 @@ public class ContactFileStore {
                 Files.createDirectories(file.getParent());
             }
             var lines = contacts.stream().map(this::format).toList();
-            Files.write(file, lines, StandardCharsets.UTF_8);
+            Files.writeString(file, String.join("\n", lines) + "\n", StandardCharsets.UTF_8);
             return true;
         } catch (IOException e) {
             System.out.println("Warning: could not write " + file + " (" + e.getMessage() + ")");

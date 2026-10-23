@@ -209,7 +209,9 @@ classDiagram
 
 ## Challenge 3 – File export/import: the I/O design
 
-*Design first – the code comes after this section.*
+*Design first – the code comes after this section. Implemented in
+`ContactExporter`, `ContactImporter`, `CsvContactExporter`,
+`CsvContactImporter`, `ImportOutcome` and `ContactTransferService`.*
 
 ### Goal
 
@@ -309,13 +311,16 @@ itself, so an export is a read-only operation on the app's state.
 
 ### Test plan for the challenge
 
+*Implemented in `CsvContactExporterTest`, `CsvContactImporterTest`,
+`ContactTransferServiceTest` and the export/import cases in `ContactAppTest`.*
+
 | Case | Expected |
 |------|----------|
 | Export two contacts | File with header + two rows |
-| Name containing a comma | Field quoted: `"Smith, John"` |
+| Name containing a comma | Field quoted: `"Smith, Jr"` |
 | Name containing a quote | Inner quotes doubled |
 | Empty contact list | File with only the header |
-| Export to a missing folder | Error message, no crash |
+| Export to a missing folder | Folder created, or error message with no crash |
 | Import a valid file | The contacts end up in the app with the same fields |
 | Import a row with a bad phone | That row is skipped with a warning, the other rows are imported |
 | Import a file with a missing column | Error message naming the column |
@@ -323,10 +328,15 @@ itself, so an export is a read-only operation on the app's state.
 | Export → import | The same contacts come back (no duplicates – the e-mail check skips them) |
 | Import a file that does not exist | Error message, the contacts in memory are unchanged |
 
+Every validation rule V1–V9 is also asserted on the import path: a row that
+fails any rule is skipped with `Row N: <reason>` and the rest of the file is
+still imported. The rules are the same code – `CsvContactImporter` calls
+`ContactService.validate` (package-private), so the console and the file
+cannot drift apart.
+
 ### Known gaps
 
 - `contacts.txt` is loaded without validation, so a file written before the validation rules existed (or hand-edited) can still hold an invalid contact. The import path is validated, the internal file is not – fixing that means validating on load.
-- Console add/update require a nonblank email with a basic address shape; the planned importer must reuse the same checks.
 
 ### Explicitly out of scope for the challenge
 
@@ -337,6 +347,5 @@ itself, so an export is a read-only operation on the app's state.
 ## Out of scope (YAGNI – later challenges)
 
 - Challenge 1: sorted output
-- Challenge 3: file export/import → I/O design documented above, implementation still pending
 - Full RFC email validation and deliverability verification
 - GUI, database, networking
