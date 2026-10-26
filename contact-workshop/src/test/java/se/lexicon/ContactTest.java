@@ -23,11 +23,6 @@ class ContactTest {
     private static final String OTHER_PHONE = "0987654321";
     private static final String OTHER_EMAIL = emailFor(OTHER_FIRST_NAME, OTHER_LAST_NAME);
 
-    private static final String THIRD_FIRST_NAME = "Sam";
-    private static final String THIRD_LAST_NAME = "Taylor";
-    private static final String THIRD_PHONE = "111222333";
-    private static final String THIRD_EMAIL = emailFor(THIRD_FIRST_NAME, THIRD_LAST_NAME);
-
     private static String emailFor(String firstName, String lastName) {
         return firstName.toLowerCase() + "." + lastName.toLowerCase() + "@" + EMAIL_DOMAIN;
     }
@@ -84,12 +79,12 @@ class ContactTest {
     void equals_isSymmetric_andTransitive_forMatchingIds() {
         var alex = new Contact(7, FIRST_NAME, LAST_NAME, PHONE, EMAIL);
         var alice = new Contact(7, OTHER_FIRST_NAME, OTHER_LAST_NAME, OTHER_PHONE, OTHER_EMAIL);
-        var sam = new Contact(7, THIRD_FIRST_NAME, THIRD_LAST_NAME, THIRD_PHONE, THIRD_EMAIL);
+        var alexAgain = contact(7);
 
         assertEquals(alex, alice);
         assertEquals(alice, alex);
-        assertEquals(alice, sam);
-        assertEquals(alex, sam);
+        assertEquals(alice, alexAgain);
+        assertEquals(alex, alexAgain);
     }
 
     @Test
@@ -117,8 +112,8 @@ class ContactTest {
         var pairs = new Contact[][]{
                 {new Contact(1, FIRST_NAME, LAST_NAME, PHONE, EMAIL),
                         new Contact(1, OTHER_FIRST_NAME, OTHER_LAST_NAME, OTHER_PHONE, OTHER_EMAIL)},
-                {new Contact(2, THIRD_FIRST_NAME, THIRD_LAST_NAME, THIRD_PHONE, THIRD_EMAIL),
-                        new Contact(2, OTHER_FIRST_NAME, OTHER_LAST_NAME, OTHER_PHONE, OTHER_EMAIL)}
+                {new Contact(2, OTHER_FIRST_NAME, OTHER_LAST_NAME, OTHER_PHONE, OTHER_EMAIL),
+                        new Contact(2, FIRST_NAME, LAST_NAME, PHONE, EMAIL)}
         };
 
         for (var pair : pairs) {
@@ -134,7 +129,7 @@ class ContactTest {
         var set = new HashSet<Contact>();
         var alex = new Contact(1, FIRST_NAME, LAST_NAME, PHONE, EMAIL);
         var duplicate = new Contact(1, OTHER_FIRST_NAME, OTHER_LAST_NAME, OTHER_PHONE, OTHER_EMAIL);
-        var other = new Contact(2, THIRD_FIRST_NAME, THIRD_LAST_NAME, THIRD_PHONE, THIRD_EMAIL);
+        var other = otherContact(2);
 
         assertTrue(set.add(alex));
         assertFalse(set.add(duplicate), "same id must be treated as duplicate");
