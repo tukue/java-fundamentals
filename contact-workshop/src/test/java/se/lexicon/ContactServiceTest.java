@@ -44,7 +44,7 @@ class ContactServiceTest {
         assertTrue(result.ok());
         assertTrue(result.message().contains("1"));
         assertEquals(1, service.list().size());
-        assertEquals(1, service.search("alex").size());
+        assertEquals(1, service.search("alex").getFirst().getId());
     }
 
     @Test
@@ -271,6 +271,14 @@ class ContactServiceTest {
     @Test
     void list_isEmptyWhenNothingAdded() {
         assertTrue(service.list().isEmpty());
+    }
+
+    @Test
+    void search_returnsAllMatchingContacts() {
+        service.add(FIRST_NAME, LAST_NAME, PHONE, EMAIL);
+        service.add(OTHER_FIRST_NAME, OTHER_LAST_NAME, OTHER_PHONE, OTHER_EMAIL);
+
+        assertEquals(service.list(), service.search("a"));
     }
 
     @Test

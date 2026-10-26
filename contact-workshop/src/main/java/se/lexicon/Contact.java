@@ -37,6 +37,18 @@ public final class Contact {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Contact contact)) return false;
+        return id == contact.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(id);
+    }
+
+    @Override
     public String toString() {
         return "#%-3d %-20s %-15s %s".formatted(
                 id,

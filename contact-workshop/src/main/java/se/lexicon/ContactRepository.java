@@ -1,6 +1,5 @@
 package se.lexicon;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -55,15 +54,11 @@ public class ContactRepository {
 
     public List<Contact> search(String query) {
         var needle = query == null ? "" : query.trim().toLowerCase(Locale.ROOT);
-        var matches = new ArrayList<Contact>();
-        for (var contact : contacts.values()) {
-            if (contact.getFirstName().toLowerCase(Locale.ROOT).contains(needle)
-                    || contact.getLastName().toLowerCase(Locale.ROOT).contains(needle)
-                    || contact.getPhone().toLowerCase(Locale.ROOT).contains(needle)) {
-                matches.add(contact);
-            }
-        }
-        return List.copyOf(matches);
+        return contacts.values().stream()
+                .filter(contact -> contact.getFirstName().toLowerCase(Locale.ROOT).contains(needle)
+                        || contact.getLastName().toLowerCase(Locale.ROOT).contains(needle)
+                        || contact.getPhone().contains(needle))
+                .toList();
     }
 
     public Optional<Contact> update(int id, String firstName, String lastName, String phone, String email) {

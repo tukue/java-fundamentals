@@ -101,21 +101,29 @@ class ContactRepositoryTest {
     }
 
     @Test
-    void search_matchesFirstNameLastNameAndPhoneIgnoringCase() {
-        addAlex();
-        addAlice();
+    void search_matchesFirstNameLastNameOrPhoneIgnoringCase() {
+        var first = addAlex();
+        var second = addAlice();
 
-        assertEquals(1, repository.search("alex").size());
-        assertEquals(1, repository.search("BOB").size());
-        assertEquals(1, repository.search("12345").size());
-        assertEquals(2, repository.search("").size());
+        assertEquals(java.util.List.of(first), repository.search("alex"));
+        assertEquals(java.util.List.of(second), repository.search("BOB"));
+        assertEquals(java.util.List.of(first), repository.search("12345"));
+        assertEquals(java.util.List.of(first, second), repository.search(""));
     }
 
     @Test
-    void search_returnsEmptyListWhenNothingMatches() {
+    void search_returnsEmptyWhenNothingMatches() {
         addAlex();
 
         assertTrue(repository.search("zzz").isEmpty());
+    }
+
+    @Test
+    void search_returnsAllMatchingContactsInInsertionOrder() {
+        var first = addAlex();
+        var second = addAlice();
+
+        assertEquals(java.util.List.of(first, second), repository.search("a"));
     }
 
     @Test
