@@ -88,6 +88,17 @@ class ContactAppTest {
     }
 
     @Test
+    void search_whenSeveralMatch_displaysOnlyOneContact() throws Exception {
+        Files.writeString(tempDir.resolve("contacts.txt"), CONTACT_LINE + OTHER_CONTACT_LINE);
+
+        var output = runApp("3\na\n0\n");
+
+        assertTrue(output.contains("Alex Smith"));
+        assertFalse(output.contains("Alice"), "only one contact must be displayed");
+        assertFalse(output.contains("0987654321"), "only one contact must be displayed");
+    }
+
+    @Test
     void search_withNoMatch_displaysNoContactsMessage() throws Exception {
         Files.writeString(tempDir.resolve("contacts.txt"), CONTACT_LINE + OTHER_CONTACT_LINE);
 

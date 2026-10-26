@@ -115,13 +115,13 @@ public class ContactApp {
         if (query == null) {
             return;
         }
-        var matches = service.search(query);
-        if (matches.isEmpty()) {
+        var match = service.search(query);
+        if (match.isEmpty()) {
             System.out.println("No contacts match \"" + query + "\".");
             return;
         }
         printHeader();
-        matches.forEach(c -> System.out.println(c));
+        System.out.println(match.get());
     }
 
     private void updateContact() {

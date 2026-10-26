@@ -55,7 +55,7 @@ public class ContactService {
         return repository.findAll();
     }
 
-    public List<Contact> search(String query) {
+    public Optional<Contact> search(String query) {
         return repository.search(query);
     }
 
