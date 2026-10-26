@@ -29,6 +29,8 @@ class ContactAppTest {
 
     private static final String CONTACT_LINE =
             "1\tAlex\tSmith\t1234567890\talex.smith@example.com\n";
+    private static final String OTHER_CONTACT_LINE =
+            "2\tAlice\tBob\t0987654321\talice.bob@example.com\n";
 
     @TempDir
     Path tempDir;
@@ -59,6 +61,41 @@ class ContactAppTest {
         var output = runApp("3\n");
         assertTrue(output.contains("Search name or phone:"));
         assertTrue(output.contains("Saved 0 contact(s)"));
+    }
+
+    @Test
+    void search_byName_displaysOnlyMatchingContact() throws Exception {
+        Files.writeString(tempDir.resolve("contacts.txt"), CONTACT_LINE + OTHER_CONTACT_LINE);
+
+        var output = runApp("3\nalex\n0\n");
+
+        assertTrue(output.contains("Alex Smith"));
+        assertTrue(output.contains("1234567890"));
+        assertFalse(output.contains("Alice"), "non-matching contact must not be displayed");
+        assertFalse(output.contains("0987654321"), "non-matching contact must not be displayed");
+    }
+
+    @Test
+    void search_byPhone_displaysOnlyMatchingContact() throws Exception {
+        Files.writeString(tempDir.resolve("contacts.txt"), CONTACT_LINE + OTHER_CONTACT_LINE);
+
+        var output = runApp("3\n098765\n0\n");
+
+        assertTrue(output.contains("Alice Bob"));
+        assertTrue(output.contains("0987654321"));
+        assertFalse(output.contains("Alex"), "non-matching contact must not be displayed");
+        assertFalse(output.contains("1234567890"), "non-matching contact must not be displayed");
+    }
+
+    @Test
+    void search_withNoMatch_displaysNoContactsMessage() throws Exception {
+        Files.writeString(tempDir.resolve("contacts.txt"), CONTACT_LINE + OTHER_CONTACT_LINE);
+
+        var output = runApp("3\nzzz\n0\n");
+
+        assertTrue(output.contains("No contacts match \"zzz\"."));
+        assertFalse(output.contains("Alex"));
+        assertFalse(output.contains("Alice"));
     }
 
     @Test
