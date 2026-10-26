@@ -121,7 +121,7 @@ public class ContactApp {
             return;
         }
         printHeader();
-        System.out.println(match.get());
+        match.forEach(System.out::println);
     }
 
     private void updateContact() {

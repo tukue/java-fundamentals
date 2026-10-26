@@ -101,14 +101,14 @@ class ContactRepositoryTest {
     }
 
     @Test
-    void search_returnsOnlyFirstMatchByFirstNameLastNameOrPhoneIgnoringCase() {
+    void search_matchesFirstNameLastNameOrPhoneIgnoringCase() {
         var first = addAlex();
         var second = addAlice();
 
-        assertEquals(first, repository.search("alex").orElseThrow());
-        assertEquals(second, repository.search("BOB").orElseThrow());
-        assertEquals(first, repository.search("12345").orElseThrow());
-        assertEquals(first, repository.search("").orElseThrow());
+        assertEquals(java.util.List.of(first), repository.search("alex"));
+        assertEquals(java.util.List.of(second), repository.search("BOB"));
+        assertEquals(java.util.List.of(first), repository.search("12345"));
+        assertEquals(java.util.List.of(first, second), repository.search(""));
     }
 
     @Test
@@ -119,11 +119,11 @@ class ContactRepositoryTest {
     }
 
     @Test
-    void search_returnsOnlyOneContact_evenWhenSeveralMatch() {
+    void search_returnsAllMatchingContactsInInsertionOrder() {
         var first = addAlex();
-        addAlice();
+        var second = addAlice();
 
-        assertEquals(first, repository.search("a").orElseThrow());
+        assertEquals(java.util.List.of(first, second), repository.search("a"));
     }
 
     @Test
@@ -232,10 +232,10 @@ class ContactRepositoryTest {
     @Test
     void search_trimsQueryAndTreatsNullAsEmpty() {
         var first = addAlex();
-        addAlice();
+        var second = addAlice();
 
-        assertEquals(first, repository.search("  ALEX  ").orElseThrow());
-        assertEquals(first, repository.search(null).orElseThrow());
+        assertEquals(java.util.List.of(first), repository.search("  ALEX  "));
+        assertEquals(java.util.List.of(first, second), repository.search(null));
     }
 
     @Test

@@ -52,16 +52,13 @@ public class ContactRepository {
         return Optional.ofNullable(contacts.get(id));
     }
 
-    public Optional<Contact> search(String query) {
+    public List<Contact> search(String query) {
         var needle = query == null ? "" : query.trim().toLowerCase(Locale.ROOT);
-        for (var contact : contacts.values()) {
-            if (contact.getFirstName().toLowerCase(Locale.ROOT).contains(needle)
-                    || contact.getLastName().toLowerCase(Locale.ROOT).contains(needle)
-                    || contact.getPhone().toLowerCase(Locale.ROOT).contains(needle)) {
-                return Optional.of(contact);
-            }
-        }
-        return Optional.empty();
+        return contacts.values().stream()
+                .filter(contact -> contact.getFirstName().toLowerCase(Locale.ROOT).contains(needle)
+                        || contact.getLastName().toLowerCase(Locale.ROOT).contains(needle)
+                        || contact.getPhone().contains(needle))
+                .toList();
     }
 
     public Optional<Contact> update(int id, String firstName, String lastName, String phone, String email) {
