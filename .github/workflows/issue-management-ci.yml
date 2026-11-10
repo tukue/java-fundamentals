@@ -1,0 +1,39 @@
+name: Issue Management CI/CD
+
+on:
+  push:
+    paths:
+      - 'issue-management/**'
+      - '.github/workflows/issue-management-ci.yml'
+  pull_request:
+    paths:
+      - 'issue-management/**'
+      - '.github/workflows/issue-management-ci.yml'
+  workflow_dispatch:
+
+jobs:
+  build-test-package:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: issue-management
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Build and test
+        run: mvn --batch-mode --no-transfer-progress clean package
+
+      - name: Upload packaged application
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue-management
+          path: issue-management/target/issue-management-*.jar
+          if-no-files-found: error
+          retention-days: 14
