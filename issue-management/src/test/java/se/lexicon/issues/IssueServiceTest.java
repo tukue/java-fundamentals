@@ -55,6 +55,17 @@ class IssueServiceTest {
     }
 
     @Test
+    void doesNotReuseDeletedHighestId() {
+        Issue removed = service.findById(3);
+        assertTrue(service.delete(removed.id()));
+
+        Issue created = service.create("Replacement", "New issue", "Alice Smith", IssuePriority.LOW);
+
+        assertEquals(4, created.id());
+        assertEquals(3, removed.id());
+    }
+
+    @Test
     void updatesIssueAndPreservesOtherFields() {
         Issue updated = service.update(2, "Search is very slow", "Search times out", IssuePriority.CRITICAL);
 
