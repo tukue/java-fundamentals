@@ -1,5 +1,7 @@
 package se.lexicon.issues;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -13,35 +15,76 @@ import java.util.stream.Collectors;
 /** In-memory issue management operations and stream-based queries. */
 public class IssueService {
     private final List<Issue> issues;
-    private int nextId;
+    private final IssueFileStore fileStore;
+    private long nextId;
 
     public IssueService(Collection<Issue> issues) {
+        this(issues, null, 1);
+    }
+
+    private IssueService(Collection<Issue> issues, IssueFileStore fileStore, long storedNextId) {
         this.issues = new ArrayList<>(Objects.requireNonNull(issues, "issues"));
+        this.fileStore = fileStore;
         long distinctIds = this.issues.stream().map(Issue::id).distinct().count();
         if (distinctIds != this.issues.size()) {
             throw new IllegalArgumentException("Issue ids must be unique");
         }
-        this.nextId = this.issues.stream().mapToInt(Issue::id).max().orElse(0) + 1;
+        long firstAvailableId = this.issues.stream().mapToInt(Issue::id).max().orElse(0) + 1L;
+        this.nextId = Math.max(firstAvailableId, storedNextId);
+    }
+
+    public static IssueService fromFile(IssueFileStore fileStore) throws IOException {
+        Objects.requireNonNull(fileStore, "fileStore");
+        var storedIssues = fileStore.load();
+        return new IssueService(storedIssues.issues(), fileStore, storedIssues.nextId());
     }
 
     public Issue create(String title, String description, String assignee, IssuePriority priority) {
-        Issue created = new Issue(nextId, title, description, assignee, IssueStatus.OPEN, priority);
-        issues.add(created);
-        nextId++;
+        return create("Sample Application", DeploymentEnvironment.PRODUCTION,
+                title, description, assignee, priority);
+    }
+
+    public Issue create(String applicationName, DeploymentEnvironment environment, String title,
+                        String description, String assignee, IssuePriority priority) {
+        if (nextId > Integer.MAX_VALUE) {
+            throw new IllegalStateException("No issue ids remain");
+        }
+        Issue created = new Issue((int) nextId, applicationName, environment, title, description,
+                assignee, IssueStatus.OPEN, priority);
+        var updatedIssues = new ArrayList<>(issues);
+        updatedIssues.add(created);
+        long followingId = nextId + 1;
+        saveAndReplace(updatedIssues, followingId);
+        nextId = followingId;
         return created;
     }
 
     public Issue update(int id, String title, String description, IssuePriority priority) {
         Issue existing = findById(id);
-        Issue updated = new Issue(id, title, description, existing.assignee(), existing.status(), priority);
+        return update(id, existing.applicationName(), existing.environment(), title, description, priority);
+    }
+
+    public Issue update(int id, String applicationName, DeploymentEnvironment environment,
+                        String title, String description, IssuePriority priority) {
+        Issue existing = findById(id);
+        Issue updated = new Issue(id, applicationName, environment, title, description,
+                existing.assignee(), existing.status(), priority);
+        replace(id, updated);
+        return updated;
+    }
+
+    public Issue updateDeployment(int id, String applicationName, DeploymentEnvironment environment) {
+        Issue existing = findById(id);
+        Issue updated = new Issue(id, applicationName, environment, existing.title(), existing.description(),
+                existing.assignee(), existing.status(), existing.priority());
         replace(id, updated);
         return updated;
     }
 
     public Issue assign(int id, String assignee) {
         Issue existing = findById(id);
-        Issue updated = new Issue(id, existing.title(), existing.description(), assignee,
-                existing.status(), existing.priority());
+        Issue updated = new Issue(id, existing.applicationName(), existing.environment(), existing.title(),
+                existing.description(), assignee, existing.status(), existing.priority());
         replace(id, updated);
         return updated;
     }
@@ -49,8 +92,8 @@ public class IssueService {
     public Issue changeStatus(int id, IssueStatus status) {
         Objects.requireNonNull(status, "status");
         Issue existing = findById(id);
-        Issue updated = new Issue(id, existing.title(), existing.description(), existing.assignee(),
-                status, existing.priority());
+        Issue updated = new Issue(id, existing.applicationName(), existing.environment(), existing.title(),
+                existing.description(), existing.assignee(), status, existing.priority());
         replace(id, updated);
         return updated;
     }
@@ -58,7 +101,8 @@ public class IssueService {
     public boolean delete(int id) {
         boolean exists = issues.stream().anyMatch(issue -> issue.id() == id);
         if (exists) {
-            issues.removeIf(issue -> issue.id() == id);
+            var updatedIssues = issues.stream().filter(issue -> issue.id() != id).toList();
+            saveAndReplace(updatedIssues, nextId);
         }
         return exists;
     }
@@ -69,7 +113,22 @@ public class IssueService {
     }
 
     private void replace(int id, Issue replacement) {
-        issues.replaceAll(issue -> issue.id() == id ? replacement : issue);
+        var updatedIssues = issues.stream()
+                .map(issue -> issue.id() == id ? replacement : issue)
+                .toList();
+        saveAndReplace(updatedIssues, nextId);
+    }
+
+    private void saveAndReplace(List<Issue> updatedIssues, long updatedNextId) {
+        if (fileStore != null) {
+            try {
+                fileStore.save(updatedIssues, updatedNextId);
+            } catch (IOException exception) {
+                throw new UncheckedIOException("Could not save issues", exception);
+            }
+        }
+        issues.clear();
+        issues.addAll(updatedIssues);
     }
 
     public List<Issue> listAll() {
@@ -88,10 +147,24 @@ public class IssueService {
                 .sorted(Comparator.comparingInt(Issue::id)).toList();
     }
 
+    public List<Issue> findByApplication(String applicationName) {
+        String normalizedName = requireText(applicationName, "applicationName");
+        return issues.stream()
+                .filter(issue -> issue.applicationName().equalsIgnoreCase(normalizedName))
+                .sorted(Comparator.comparingInt(Issue::id)).toList();
+    }
+
+    public List<Issue> findByEnvironment(DeploymentEnvironment environment) {
+        Objects.requireNonNull(environment, "environment");
+        return issues.stream().filter(issue -> issue.environment() == environment)
+                .sorted(Comparator.comparingInt(Issue::id)).toList();
+    }
+
     public List<Issue> search(String query) {
         String normalizedQuery = requireText(query, "query").toLowerCase(Locale.ROOT);
         return issues.stream()
-                .filter(issue -> issue.title().toLowerCase(Locale.ROOT).contains(normalizedQuery)
+                .filter(issue -> issue.applicationName().toLowerCase(Locale.ROOT).contains(normalizedQuery)
+                        || issue.title().toLowerCase(Locale.ROOT).contains(normalizedQuery)
                         || issue.description().toLowerCase(Locale.ROOT).contains(normalizedQuery))
                 .sorted(Comparator.comparingInt(Issue::id)).toList();
     }

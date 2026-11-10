@@ -16,11 +16,14 @@ class IssueServiceTest {
     @BeforeEach
     void setUp() {
         service = new IssueService(List.of(
-                new Issue(1, "Login fails", "Reset flow broken", "Alice Smith",
+                new Issue(1, "Customer API", DeploymentEnvironment.PRODUCTION,
+                        "Login fails", "Reset flow broken", "Alice Smith",
                         IssueStatus.OPEN, IssuePriority.CRITICAL),
-                new Issue(2, "Search is slow", "Optimize search", "Alice Smith",
+                new Issue(2, "Customer Portal", DeploymentEnvironment.STAGING,
+                        "Search is slow", "Optimize search", "Alice Smith",
                         IssueStatus.OPEN, IssuePriority.HIGH),
-                new Issue(3, "Update docs", "Fix help page", "Alice Smith",
+                new Issue(3, "Customer Portal", DeploymentEnvironment.PRODUCTION,
+                        "Update docs", "Fix help page", "Alice Smith",
                         IssueStatus.CLOSED, IssuePriority.LOW)));
     }
 
@@ -32,6 +35,15 @@ class IssueServiceTest {
     @Test
     void searchesTitleAndDescriptionWithoutCaseSensitivity() {
         assertEquals(List.of(1), service.search("RESET FLOW").stream().map(Issue::id).toList());
+    }
+
+    @Test
+    void filtersIssuesByDeployedApplicationAndEnvironment() {
+        assertEquals(List.of(2, 3), service.findByApplication("customer portal")
+                .stream().map(Issue::id).toList());
+        assertEquals(List.of(2), service.findByEnvironment(DeploymentEnvironment.STAGING)
+                .stream().map(Issue::id).toList());
+        assertEquals(List.of(1), service.search("Customer API").stream().map(Issue::id).toList());
     }
 
     @Test
@@ -70,6 +82,7 @@ class IssueServiceTest {
         Issue updated = service.update(2, "Search is very slow", "Search times out", IssuePriority.CRITICAL);
 
         assertEquals("Search is very slow", updated.title());
+        assertEquals("Customer Portal", updated.applicationName());
         assertEquals("Alice Smith", updated.assignee());
         assertEquals(IssueStatus.OPEN, updated.status());
         assertEquals(IssuePriority.CRITICAL, updated.priority());
