@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 /** In-memory issue management operations and stream-based queries. */
 public class IssueService {
     private final List<Issue> issues;
+    private int nextId;
 
     public IssueService(Collection<Issue> issues) {
         this.issues = new ArrayList<>(Objects.requireNonNull(issues, "issues"));
@@ -20,12 +21,13 @@ public class IssueService {
         if (distinctIds != this.issues.size()) {
             throw new IllegalArgumentException("Issue ids must be unique");
         }
+        this.nextId = this.issues.stream().mapToInt(Issue::id).max().orElse(0) + 1;
     }
 
     public Issue create(String title, String description, String assignee, IssuePriority priority) {
-        int nextId = issues.stream().mapToInt(Issue::id).max().orElse(0) + 1;
         Issue created = new Issue(nextId, title, description, assignee, IssueStatus.OPEN, priority);
         issues.add(created);
+        nextId++;
         return created;
     }
 
