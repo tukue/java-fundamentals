@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalDouble;
+import java.util.TreeSet;
 import java.util.TreeMap;
 import java.util.function.Predicate;
 
@@ -35,6 +36,35 @@ class PersonStreamExercisesTest {
         assertEquals(expectedNames(Person::isActive), names(PersonStreamExercises.activePeople(people)));
         assertEquals(expectedNames(person -> person.getAge() >= 18),
                 names(PersonStreamExercises.adults(people)));
+    }
+
+    @Test
+    void mapsAllNamesAndCountsAdults() {
+        assertEquals(List.of("Amina", "Smith", "Alice", "Alex", "Lina", "Omar"),
+                PersonStreamExercises.names(people));
+        assertEquals(expectedNames(person -> person.getAge() >= 18).size(),
+                PersonStreamExercises.countAdults(people));
+    }
+
+    @Test
+    void sortsAllPeopleByAge() {
+        var expected = new ArrayList<>(people);
+        expected.sort(Comparator.comparingInt(Person::getAge));
+
+        assertEquals(names(expected), names(PersonStreamExercises.sortByAge(people)));
+    }
+
+    @Test
+    void findsFirstActiveStockholmResidentInEncounterOrder() {
+        Person expected = null;
+        for (Person person : people) {
+            if (person.isActive() && person.getCity().equalsIgnoreCase("Stockholm")) {
+                expected = person;
+                break;
+            }
+        }
+
+        assertEquals(expected, PersonStreamExercises.firstActivePersonInStockholm(people).orElse(null));
     }
 
     @Test
@@ -122,6 +152,51 @@ class PersonStreamExercisesTest {
                 names(PersonStreamExercises.filterPeople(people, PersonRules.ADULT_OR_LIVES_IN_STOCKHOLM)));
         assertEquals(expectedNames(person -> !person.isActive()),
                 names(PersonStreamExercises.filterPeople(people, PersonRules.NOT_ACTIVE)));
+    }
+
+    @Test
+    void appliesOptionalCombinedFilters() {
+        var expectedActiveAdults = new ArrayList<Person>();
+        for (Person person : people) {
+            if (person.isActive() && person.getAge() >= 18) {
+                expectedActiveAdults.add(person);
+            }
+        }
+        expectedActiveAdults.sort(Comparator.comparingInt(Person::getAge));
+        assertEquals(names(expectedActiveAdults),
+                names(PersonStreamExercises.activeAdults(people)));
+        assertEquals(expectedNames(person -> person.isActive()
+                        && person.getCity().equalsIgnoreCase("Stockholm")),
+                names(PersonStreamExercises.activePeopleInStockholm(people)));
+        assertEquals(expectedNames(person -> !person.isActive() && person.getAge() > 30),
+                names(PersonStreamExercises.inactivePeopleOlderThan30(people)));
+    }
+
+    @Test
+    void collectsSortedUniqueCitiesAndNameInitials() {
+        var expectedCities = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+        var expectedInitials = new TreeSet<String>();
+        for (Person person : people) {
+            expectedCities.add(person.getCity());
+            expectedInitials.add(person.getName().substring(0, 1).toUpperCase(java.util.Locale.ROOT));
+        }
+
+        assertEquals(List.copyOf(expectedCities), PersonStreamExercises.uniqueCities(people));
+        assertEquals(List.copyOf(expectedInitials), PersonStreamExercises.uniqueFirstLetters(people));
+    }
+
+    @Test
+    void mapsPeopleToDisplayStringsAndEmails() {
+        var expectedDescriptions = new ArrayList<String>();
+        var expectedEmails = new ArrayList<String>();
+        for (Person person : people) {
+            expectedDescriptions.add("%s (%d) - %s".formatted(
+                    person.getName(), person.getAge(), person.getCity()));
+            expectedEmails.add(person.getName().toLowerCase(java.util.Locale.ROOT) + "@example.com");
+        }
+
+        assertEquals(expectedDescriptions, PersonStreamExercises.formatPeople(people));
+        assertEquals(expectedEmails, PersonStreamExercises.emails(people));
     }
 
     @Test
