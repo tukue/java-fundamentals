@@ -3,6 +3,7 @@ package se.lexicon.streams.people;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalDouble;
@@ -22,6 +23,25 @@ public final class PersonStreamExercises {
         return people.stream().filter(Person::isActive).toList();
     }
 
+    public static List<String> names(Collection<Person> people) {
+        return people.stream().map(Person::getName).toList();
+    }
+
+    public static long countAdults(Collection<Person> people) {
+        return people.stream().filter(person -> person.getAge() >= 18).count();
+    }
+
+    public static List<Person> sortByAge(Collection<Person> people) {
+        return people.stream().sorted(Comparator.comparingInt(Person::getAge)).toList();
+    }
+
+    public static Optional<Person> firstActivePersonInStockholm(Collection<Person> people) {
+        return people.stream()
+                .filter(Person::isActive)
+                .filter(person -> person.getCity().equalsIgnoreCase("Stockholm"))
+                .findFirst();
+    }
+
     public static List<Person> adults(Collection<Person> people) {
         return people.stream().filter(person -> person.getAge() >= 18).toList();
     }
@@ -31,6 +51,43 @@ public final class PersonStreamExercises {
                 .filter(Person::isActive)
                 .filter(person -> person.getAge() >= 18)
                 .sorted(Comparator.comparingInt(Person::getAge))
+                .toList();
+    }
+
+    public static List<Person> activePeopleInStockholm(Collection<Person> people) {
+        return filterPeople(people, PersonRules.IS_ACTIVE.and(PersonRules.LIVES_IN_STOCKHOLM));
+    }
+
+    public static List<Person> inactivePeopleOlderThan30(Collection<Person> people) {
+        return people.stream()
+                .filter(PersonRules.NOT_ACTIVE)
+                .filter(person -> person.getAge() > 30)
+                .toList();
+    }
+
+    public static List<String> uniqueCities(Collection<Person> people) {
+        return people.stream().map(Person::getCity).distinct().sorted(String.CASE_INSENSITIVE_ORDER).toList();
+    }
+
+    public static List<String> uniqueFirstLetters(Collection<Person> people) {
+        return people.stream()
+                .map(Person::getName)
+                .filter(name -> !name.isEmpty())
+                .map(name -> name.substring(0, 1).toUpperCase(Locale.ROOT))
+                .distinct()
+                .sorted()
+                .toList();
+    }
+
+    public static List<String> formatPeople(Collection<Person> people) {
+        return people.stream()
+                .map(person -> "%s (%d) - %s".formatted(person.getName(), person.getAge(), person.getCity()))
+                .toList();
+    }
+
+    public static List<String> emails(Collection<Person> people) {
+        return people.stream()
+                .map(person -> person.getName().toLowerCase(Locale.ROOT) + "@example.com")
                 .toList();
     }
 
