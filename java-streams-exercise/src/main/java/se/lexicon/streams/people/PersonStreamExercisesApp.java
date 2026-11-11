@@ -33,7 +33,7 @@ public class PersonStreamExercisesApp {
         var cities = List.of("Stockholm", "Uppsala", "Gothenburg", "Malmö");
         return List.of("Amina", "Smith", "Alice", "Alex", "Lina", "Omar").stream()
                 .map(name -> new Person(name,
-                        random.nextInt(18, 90),
+                        random.nextInt(18, 91),
                         cities.get(random.nextInt(cities.size())),
                         random.nextBoolean()))
                 .toList();
