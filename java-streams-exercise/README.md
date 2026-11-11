@@ -1,6 +1,6 @@
-# Java Streams Exercise — Collections
+# Java Streams Exercise — People
 
-A small Maven practice project for Java streams, lambda expressions, and collection collectors.
+A Maven practice project focused on functional programming and the Stream API using a `Person` collection.
 
 ## Run
 
@@ -8,21 +8,8 @@ From this directory:
 
 ```sh
 mvn test
-mvn exec:java -Dexec.mainClass=se.lexicon.streams.tasks.TaskStreamsApp
 mvn exec:java -Dexec.mainClass=se.lexicon.streams.people.PersonStreamExercisesApp
 ```
-
-## Task collection exercises
-
-`TaskQueries` is in the `se.lexicon.streams.tasks` package:
-
-1. Filter tasks by status.
-2. Group tasks by status.
-3. Count tasks for each assignee.
-4. Collect unique tags in alphabetical order.
-5. Calculate average estimate points per assignee.
-
-The task sample uses an immutable list and tags stored in sets, so the methods practice processing different collection types with streams.
 
 ## Functional programming and Person exercises
 
