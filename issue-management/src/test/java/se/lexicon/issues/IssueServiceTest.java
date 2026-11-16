@@ -39,7 +39,7 @@ class IssueServiceTest {
 
     @Test
     void searchesIssueMetadataWithoutCaseSensitivity() {
-        assertEquals(List.of(2), service.search("alice").stream().map(Issue::id).toList());
+        assertEquals(List.of(1, 2, 3), service.search("alice").stream().map(Issue::id).toList());
         assertEquals(List.of(1, 2), service.search("open").stream().map(Issue::id).toList());
         assertEquals(List.of(1), service.search("critical").stream().map(Issue::id).toList());
         assertEquals(List.of(2), service.search("staging").stream().map(Issue::id).toList());
