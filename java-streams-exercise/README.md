@@ -1,6 +1,6 @@
-# Java Streams Exercise — People
+# Java Streams Exercises
 
-A Maven practice project focused on functional programming and the Stream API using a `Person` collection.
+A Maven practice project for Java streams, lambda expressions, and collection collectors.
 
 ## Run
 
@@ -8,8 +8,13 @@ From this directory:
 
 ```sh
 mvn test
+mvn exec:java -Dexec.mainClass=se.lexicon.streams.tasks.TaskStreamsApp
 mvn exec:java -Dexec.mainClass=se.lexicon.streams.people.PersonStreamExercisesApp
 ```
+
+## Task collection exercises
+
+`TaskQueries` is in the `se.lexicon.streams.tasks` package. It demonstrates filtering tasks by status, grouping by status, counting tasks per assignee, collecting unique tags, and calculating average estimate points per assignee.
 
 ## Functional programming and Person exercises
 
@@ -25,6 +30,6 @@ mvn exec:java -Dexec.mainClass=se.lexicon.streams.people.PersonStreamExercisesAp
 ### Functional rules and actions
 
 - `PersonRule` is a composable `Predicate<Person>` with `and`, `or`, and `negate` rules.
-- `PersonRules` defines active, adult, Stockholm resident, and the combined example rules.
+- `PersonRules` defines active, adult, Stockholm resident, and combined example rules.
 - `PersonAction` is a `Consumer<Person>`; `PersonActions` includes name-printing and email-message actions.
 - `PersonStreamExercises.filterPeople` demonstrates a custom rule, while `PersonProcessor` uses the standard `Predicate<Person>` and `Consumer<Person>` APIs.
