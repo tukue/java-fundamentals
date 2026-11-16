@@ -163,9 +163,14 @@ public class IssueService {
     public List<Issue> search(String query) {
         String normalizedQuery = requireText(query, "query").toLowerCase(Locale.ROOT);
         return issues.stream()
-                .filter(issue -> issue.applicationName().toLowerCase(Locale.ROOT).contains(normalizedQuery)
+                .filter(issue -> Integer.toString(issue.id()).contains(normalizedQuery)
+                        || issue.applicationName().toLowerCase(Locale.ROOT).contains(normalizedQuery)
                         || issue.title().toLowerCase(Locale.ROOT).contains(normalizedQuery)
-                        || issue.description().toLowerCase(Locale.ROOT).contains(normalizedQuery))
+                        || issue.description().toLowerCase(Locale.ROOT).contains(normalizedQuery)
+                        || issue.assignee().toLowerCase(Locale.ROOT).contains(normalizedQuery)
+                        || issue.status().name().toLowerCase(Locale.ROOT).contains(normalizedQuery)
+                        || issue.priority().name().toLowerCase(Locale.ROOT).contains(normalizedQuery)
+                        || issue.environment().name().toLowerCase(Locale.ROOT).contains(normalizedQuery))
                 .sorted(Comparator.comparingInt(Issue::id)).toList();
     }
 

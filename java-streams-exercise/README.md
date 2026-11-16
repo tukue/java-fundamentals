@@ -1,6 +1,6 @@
-# Java Streams Exercise — Collections
+# Java Streams Exercises
 
-A small Maven practice project for Java streams, lambda expressions, and collection collectors.
+A Maven practice project for Java streams, lambda expressions, and collection collectors.
 
 ## Run
 
@@ -14,15 +14,7 @@ mvn exec:java -Dexec.mainClass=se.lexicon.streams.people.PersonStreamExercisesAp
 
 ## Task collection exercises
 
-`TaskQueries` is in the `se.lexicon.streams.tasks` package:
-
-1. Filter tasks by status.
-2. Group tasks by status.
-3. Count tasks for each assignee.
-4. Collect unique tags in alphabetical order.
-5. Calculate average estimate points per assignee.
-
-The task sample uses an immutable list and tags stored in sets, so the methods practice processing different collection types with streams.
+`TaskQueries` is in the `se.lexicon.streams.tasks` package. It demonstrates filtering tasks by status, grouping by status, counting tasks per assignee, collecting unique tags, and calculating average estimate points per assignee.
 
 ## Functional programming and Person exercises
 
@@ -38,6 +30,6 @@ The task sample uses an immutable list and tags stored in sets, so the methods p
 ### Functional rules and actions
 
 - `PersonRule` is a composable `Predicate<Person>` with `and`, `or`, and `negate` rules.
-- `PersonRules` defines active, adult, Stockholm resident, and the combined example rules.
+- `PersonRules` defines active, adult, Stockholm resident, and combined example rules.
 - `PersonAction` is a `Consumer<Person>`; `PersonActions` includes name-printing and email-message actions.
 - `PersonStreamExercises.filterPeople` demonstrates a custom rule, while `PersonProcessor` uses the standard `Predicate<Person>` and `Consumer<Person>` APIs.

@@ -24,7 +24,7 @@ class IssueServiceTest {
                         IssueStatus.OPEN, IssuePriority.HIGH),
                 new Issue(3, "Customer Portal", DeploymentEnvironment.PRODUCTION,
                         "Update docs", "Fix help page", "Alice Smith",
-                        IssueStatus.CLOSED, IssuePriority.LOW)));
+                        IssueStatus.CLOSED_WITH_FIX, IssuePriority.LOW)));
     }
 
     @Test
@@ -35,6 +35,15 @@ class IssueServiceTest {
     @Test
     void searchesTitleAndDescriptionWithoutCaseSensitivity() {
         assertEquals(List.of(1), service.search("RESET FLOW").stream().map(Issue::id).toList());
+    }
+
+    @Test
+    void searchesIssueMetadataWithoutCaseSensitivity() {
+        assertEquals(List.of(1, 2, 3), service.search("alice").stream().map(Issue::id).toList());
+        assertEquals(List.of(1, 2), service.search("open").stream().map(Issue::id).toList());
+        assertEquals(List.of(1), service.search("critical").stream().map(Issue::id).toList());
+        assertEquals(List.of(2), service.search("staging").stream().map(Issue::id).toList());
+        assertEquals(List.of(2), service.search("2").stream().map(Issue::id).toList());
     }
 
     @Test
@@ -54,7 +63,17 @@ class IssueServiceTest {
     @Test
     void countsIssuesByStatus() {
         assertEquals(2L, service.countByStatus().get(IssueStatus.OPEN));
-        assertEquals(1L, service.countByStatus().get(IssueStatus.CLOSED));
+        assertEquals(1L, service.countByStatus().get(IssueStatus.CLOSED_WITH_FIX));
+    }
+
+    @Test
+    void canPutIssueOnHold() {
+        Issue updated = service.changeStatus(2, IssueStatus.ON_HOLD);
+
+        assertEquals(IssueStatus.ON_HOLD, updated.status());
+        assertEquals(List.of(2), service.findByStatus(IssueStatus.ON_HOLD)
+                .stream().map(Issue::id).toList());
+        assertEquals(1L, service.countByStatus().get(IssueStatus.ON_HOLD));
     }
 
     @Test

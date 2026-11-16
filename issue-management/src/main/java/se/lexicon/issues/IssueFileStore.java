@@ -92,11 +92,15 @@ public class IssueFileStore {
                     fields.get(3),
                     fields.get(4),
                     fields.get(5),
-                    IssueStatus.valueOf(fields.get(6)),
+                    parseStatus(fields.get(6)),
                     IssuePriority.valueOf(fields.get(7)));
         } catch (RuntimeException exception) {
             throw new InvalidIssueLineException(lineNumber, exception);
         }
+    }
+
+    private static IssueStatus parseStatus(String value) {
+        return "CLOSED".equals(value) ? IssueStatus.CLOSED_WITH_FIX : IssueStatus.valueOf(value);
     }
 
     private static String escape(String value) {

@@ -32,4 +32,14 @@ class IssueFileStoreTest {
         assertTrue(Files.readString(tempDir.resolve("application.issue.txt"))
                 .contains("Crash \\| café"));
     }
+
+    @Test
+    void loadsLegacyClosedStatusAsClosedWithFix() throws Exception {
+        Path file = tempDir.resolve("legacy-issues.txt");
+        Files.writeString(file, "#nextId=2\n1|Customer API|PRODUCTION|Title|Description|Alice|CLOSED|LOW\n");
+
+        var service = IssueService.fromFile(new IssueFileStore(file));
+
+        assertEquals(IssueStatus.CLOSED_WITH_FIX, service.findById(1).status());
+    }
 }
