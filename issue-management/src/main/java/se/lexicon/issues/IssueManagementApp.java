@@ -114,9 +114,47 @@ public class IssueManagementApp {
     }
 
     private void changeStatus() {
-        var issue = service.changeStatus(readId(),
-                readEnum("New status (OPEN, IN_PROGRESS, RESOLVED, CLOSED): ", IssueStatus.class));
+        List<Issue> issues = service.listAll();
+        if (issues.isEmpty()) {
+            System.out.println("No issues available to update.");
+            return;
+        }
+        System.out.println("Select an issue ID:");
+        issues.forEach(issue -> System.out.println("#" + issue.id() + " | [" + issue.status() + "] "
+                + issue.title()));
+        int id = readId();
+        var existing = service.findById(id);
+        System.out.println("Current status for issue #" + id + ": " + existing.status());
+        IssueStatus newStatus = readStatusChoice();
+        if (newStatus == null) {
+            System.out.println("Status change cancelled.");
+            return;
+        }
+        var issue = service.changeStatus(id, newStatus);
         System.out.println("Issue #" + issue.id() + " is now " + issue.status() + ".");
+    }
+
+    private IssueStatus readStatusChoice() {
+        IssueStatus[] statuses = IssueStatus.values();
+        while (true) {
+            for (int i = 0; i < statuses.length; i++) {
+                System.out.println((i + 1) + ". " + statuses[i]);
+            }
+            System.out.println("0. Cancel");
+            String choice = prompt("Choose the new status: ").trim();
+            try {
+                int selection = Integer.parseInt(choice);
+                if (selection == 0) {
+                    return null;
+                }
+                if (selection >= 1 && selection <= statuses.length) {
+                    return statuses[selection - 1];
+                }
+            } catch (NumberFormatException ignored) {
+                // Show the choices again for any input that is not a valid menu number.
+            }
+            System.out.println("Choose a number from 0 to " + statuses.length + ".");
+        }
     }
 
     private void deleteIssue() {
