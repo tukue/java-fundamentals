@@ -24,7 +24,7 @@ class IssueServiceTest {
                         IssueStatus.OPEN, IssuePriority.HIGH),
                 new Issue(3, "Customer Portal", DeploymentEnvironment.PRODUCTION,
                         "Update docs", "Fix help page", "Alice Smith",
-                        IssueStatus.CLOSED, IssuePriority.LOW)));
+                        IssueStatus.CLOSED_WITH_FIX, IssuePriority.LOW)));
     }
 
     @Test
@@ -63,7 +63,7 @@ class IssueServiceTest {
     @Test
     void countsIssuesByStatus() {
         assertEquals(2L, service.countByStatus().get(IssueStatus.OPEN));
-        assertEquals(1L, service.countByStatus().get(IssueStatus.CLOSED));
+        assertEquals(1L, service.countByStatus().get(IssueStatus.CLOSED_WITH_FIX));
     }
 
     @Test

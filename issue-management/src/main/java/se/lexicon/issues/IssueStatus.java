@@ -4,6 +4,6 @@ public enum IssueStatus {
     OPEN,
     IN_PROGRESS,
     RESOLVED,
-    CLOSED,
+    CLOSED_WITH_FIX,
     ON_HOLD
 }
