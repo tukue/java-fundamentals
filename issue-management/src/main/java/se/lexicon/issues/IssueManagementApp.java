@@ -127,10 +127,6 @@ public class IssueManagementApp {
         var existing = service.findById(id);
         System.out.println("Current status for issue #" + id + ": " + existing.status());
         IssueStatus newStatus = readStatusChoice(existing.status());
-        if (newStatus == null) {
-            System.out.println("Status change cancelled.");
-            return;
-        }
         var issue = service.changeStatus(id, newStatus);
         System.out.println("Issue #" + issue.id() + " is now " + issue.status() + ".");
     }
@@ -142,20 +138,16 @@ public class IssueManagementApp {
                 String currentMarker = statuses[i] == currentStatus ? " (current)" : "";
                 System.out.println((i + 1) + ". " + statuses[i] + currentMarker);
             }
-            System.out.println("0. Cancel");
             String choice = prompt("Choose the new status: ").trim();
             try {
                 int selection = Integer.parseInt(choice);
-                if (selection == 0) {
-                    return null;
-                }
                 if (selection >= 1 && selection <= statuses.length) {
                     return statuses[selection - 1];
                 }
             } catch (NumberFormatException ignored) {
                 // Show the choices again for any input that is not a valid menu number.
             }
-            System.out.println("Choose a number from 0 to " + statuses.length + ".");
+            System.out.println("Choose a number from 1 to " + statuses.length + ".");
         }
     }
 
