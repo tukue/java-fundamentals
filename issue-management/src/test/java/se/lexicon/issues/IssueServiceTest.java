@@ -67,6 +67,16 @@ class IssueServiceTest {
     }
 
     @Test
+    void canPutIssueOnHold() {
+        Issue updated = service.changeStatus(2, IssueStatus.ON_HOLD);
+
+        assertEquals(IssueStatus.ON_HOLD, updated.status());
+        assertEquals(List.of(2), service.findByStatus(IssueStatus.ON_HOLD)
+                .stream().map(Issue::id).toList());
+        assertEquals(1L, service.countByStatus().get(IssueStatus.ON_HOLD));
+    }
+
+    @Test
     void createsIssueWithNextIdAndOpenStatus() {
         Issue created = service.create("New bug", "Description", "Alice Smith", IssuePriority.MEDIUM);
 

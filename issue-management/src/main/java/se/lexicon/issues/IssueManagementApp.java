@@ -90,7 +90,7 @@ public class IssueManagementApp {
     }
 
     private void listByStatus() {
-        var status = readEnum("Status (OPEN, IN_PROGRESS, RESOLVED, CLOSED): ", IssueStatus.class);
+        var status = readEnum("Status (OPEN, IN_PROGRESS, RESOLVED, CLOSED, ON_HOLD): ", IssueStatus.class);
         listIssues(service.findByStatus(status));
     }
 
