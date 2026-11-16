@@ -125,7 +125,7 @@ public class IssueManagementApp {
         int id = readId();
         var existing = service.findById(id);
         System.out.println("Current status for issue #" + id + ": " + existing.status());
-        IssueStatus newStatus = readStatusChoice();
+        IssueStatus newStatus = readStatusChoice(existing.status());
         if (newStatus == null) {
             System.out.println("Status change cancelled.");
             return;
@@ -134,11 +134,12 @@ public class IssueManagementApp {
         System.out.println("Issue #" + issue.id() + " is now " + issue.status() + ".");
     }
 
-    private IssueStatus readStatusChoice() {
+    private IssueStatus readStatusChoice(IssueStatus currentStatus) {
         IssueStatus[] statuses = IssueStatus.values();
         while (true) {
             for (int i = 0; i < statuses.length; i++) {
-                System.out.println((i + 1) + ". " + statuses[i]);
+                String currentMarker = statuses[i] == currentStatus ? " (current)" : "";
+                System.out.println((i + 1) + ". " + statuses[i] + currentMarker);
             }
             System.out.println("0. Cancel");
             String choice = prompt("Choose the new status: ").trim();
