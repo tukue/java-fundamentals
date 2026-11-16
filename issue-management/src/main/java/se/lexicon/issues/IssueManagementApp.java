@@ -85,7 +85,8 @@ public class IssueManagementApp {
     }
 
     private void searchIssues() {
-        listIssues(service.search(prompt("Search application, title, or description: ")));
+        listIssues(service.search(prompt(
+                "Search id, application, title, description, assignee, status, priority, or environment: ")));
     }
 
     private void listByStatus() {
