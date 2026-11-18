@@ -91,7 +91,7 @@ public class ContactService {
         if (!address.matches("[^\\s@]+@[^\\s@.]+(?:\\.[^\\s@.]+)+")) {
             return "Email must have a valid address format";
         }
-        for (var field : List.of(first, last, address)) {
+        for (var field : List.of(first, last, number, address)) {
             if (field.contains("\t") || field.contains("\n") || field.contains("\r")) {
                 return "Contact fields must not contain tabs or line breaks";
             }
