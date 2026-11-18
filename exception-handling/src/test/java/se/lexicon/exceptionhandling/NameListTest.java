@@ -18,7 +18,7 @@ class NameListTest {
     void findName_whenMissing_throwsNameNotFoundException() {
         NameList names = new NameList();
 
-        assertThrows(NameNotFoundException.class, () -> names.findName("Alex"));
+        assertThrows(NameNotFoundException.class, () -> names.findName("testuser"));
     }
 
     @Test
