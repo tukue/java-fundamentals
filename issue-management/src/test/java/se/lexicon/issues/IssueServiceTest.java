@@ -16,12 +16,15 @@ class IssueServiceTest {
     @BeforeEach
     void setUp() {
         service = new IssueService(List.of(
-                new Issue(1, "Login fails", "Reset flow broken", "Alice Smith",
+                new Issue(1, "Customer API", DeploymentEnvironment.PRODUCTION,
+                        "Login fails", "Reset flow broken", "Alice Smith",
                         IssueStatus.OPEN, IssuePriority.CRITICAL),
-                new Issue(2, "Search is slow", "Optimize search", "Alice Smith",
+                new Issue(2, "Customer Portal", DeploymentEnvironment.STAGING,
+                        "Search is slow", "Optimize search", "Alice Smith",
                         IssueStatus.OPEN, IssuePriority.HIGH),
-                new Issue(3, "Update docs", "Fix help page", "Alice Smith",
-                        IssueStatus.CLOSED, IssuePriority.LOW)));
+                new Issue(3, "Customer Portal", DeploymentEnvironment.PRODUCTION,
+                        "Update docs", "Fix help page", "Alice Smith",
+                        IssueStatus.CLOSED_WITH_FIX, IssuePriority.LOW)));
     }
 
     @Test
@@ -35,6 +38,24 @@ class IssueServiceTest {
     }
 
     @Test
+    void searchesIssueMetadataWithoutCaseSensitivity() {
+        assertEquals(List.of(1, 2, 3), service.search("alice").stream().map(Issue::id).toList());
+        assertEquals(List.of(1, 2), service.search("open").stream().map(Issue::id).toList());
+        assertEquals(List.of(1), service.search("critical").stream().map(Issue::id).toList());
+        assertEquals(List.of(2), service.search("staging").stream().map(Issue::id).toList());
+        assertEquals(List.of(2), service.search("2").stream().map(Issue::id).toList());
+    }
+
+    @Test
+    void filtersIssuesByDeployedApplicationAndEnvironment() {
+        assertEquals(List.of(2, 3), service.findByApplication("customer portal")
+                .stream().map(Issue::id).toList());
+        assertEquals(List.of(2), service.findByEnvironment(DeploymentEnvironment.STAGING)
+                .stream().map(Issue::id).toList());
+        assertEquals(List.of(1), service.search("Customer API").stream().map(Issue::id).toList());
+    }
+
+    @Test
     void prioritizesCriticalOpenIssuesBeforeHigh() {
         assertEquals(List.of(1, 2), service.findOpenHighPriority().stream().map(Issue::id).toList());
     }
@@ -42,7 +63,17 @@ class IssueServiceTest {
     @Test
     void countsIssuesByStatus() {
         assertEquals(2L, service.countByStatus().get(IssueStatus.OPEN));
-        assertEquals(1L, service.countByStatus().get(IssueStatus.CLOSED));
+        assertEquals(1L, service.countByStatus().get(IssueStatus.CLOSED_WITH_FIX));
+    }
+
+    @Test
+    void canPutIssueOnHold() {
+        Issue updated = service.changeStatus(2, IssueStatus.ON_HOLD);
+
+        assertEquals(IssueStatus.ON_HOLD, updated.status());
+        assertEquals(List.of(2), service.findByStatus(IssueStatus.ON_HOLD)
+                .stream().map(Issue::id).toList());
+        assertEquals(1L, service.countByStatus().get(IssueStatus.ON_HOLD));
     }
 
     @Test
@@ -70,6 +101,7 @@ class IssueServiceTest {
         Issue updated = service.update(2, "Search is very slow", "Search times out", IssuePriority.CRITICAL);
 
         assertEquals("Search is very slow", updated.title());
+        assertEquals("Customer Portal", updated.applicationName());
         assertEquals("Alice Smith", updated.assignee());
         assertEquals(IssueStatus.OPEN, updated.status());
         assertEquals(IssuePriority.CRITICAL, updated.priority());

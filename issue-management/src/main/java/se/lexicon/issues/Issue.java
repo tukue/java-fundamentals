@@ -4,6 +4,8 @@ import java.util.Objects;
 
 public record Issue(
         int id,
+        String applicationName,
+        DeploymentEnvironment environment,
         String title,
         String description,
         String assignee,
@@ -14,6 +16,8 @@ public record Issue(
         if (id <= 0) {
             throw new IllegalArgumentException("Issue id must be positive");
         }
+        applicationName = requireText(applicationName, "applicationName");
+        environment = Objects.requireNonNull(environment, "environment");
         title = requireText(title, "title");
         description = Objects.requireNonNull(description, "description").trim();
         assignee = requireText(assignee, "assignee");
