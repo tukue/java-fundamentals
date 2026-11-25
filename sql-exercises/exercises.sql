@@ -66,19 +66,17 @@ CREATE TABLE attendance (
 
 INSERT INTO student (name, class_group)
 VALUES
-    ('Jane Smith', 'A'),
-    ('John Doe', 'A'),
-    ('Maria Garcia', 'B'),
-    ('James Wilson', 'B');
+    ('Alex', 'A'),
+    ('Alice', 'A'),
+    ('Bob', 'B');
 
 INSERT INTO attendance (student_id, attendance_date, status)
 VALUES
     (1, '2025-01-06', 'Present'),
-    (1, '2025-01-07', 'Absent'),
     (1, '2025-01-08', 'Present'),
     (2, '2025-01-06', 'Present'),
     (2, '2025-01-07', 'Present'),
-    (3, '2025-01-06', 'Absent');
+    (3, '2025-01-06', 'Present');
 
 -- 3. DQL: Data Query Language
 -- Exercise 3.1: Select every student column
