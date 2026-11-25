@@ -88,7 +88,7 @@ Stop the container with `docker stop sql-exercises-mysql` and start it again wit
 
 PostgreSQL and Oracle Free are available as optional Docker Compose profiles. Their
 passwords and host ports are configured separately from the MySQL settings in
-`sql-exercises/.env`. Replace each `REPLACE_ME` value with a local password. The
+`sql-exercises/.env`. Replace each password placeholder with a local password. The
 `.env` file is ignored by Git and should not be committed.
 
 | Database | Profile | Host port setting | Default port |
