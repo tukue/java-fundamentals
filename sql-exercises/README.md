@@ -12,7 +12,7 @@ can be run without the lecture database.
 
 The script is designed as a learning worksheet: exercise statements are grouped and
 commented, and the delete exercise uses the ID of the sample course it inserted.
-Running the script again resets the sample tables.
+Running the script again resets the sample tables, including `courses`.
 
 ## Provision a MySQL database with Docker
 
@@ -83,3 +83,34 @@ also be used to view and manage the container.
 
 Stop the container with `docker stop sql-exercises-mysql` and start it again with
 `docker start sql-exercises-mysql`. The container retains its data when stopped.
+
+## Optional PostgreSQL and Oracle containers
+
+PostgreSQL and Oracle Free are available as optional Docker Compose profiles. Their
+passwords and host ports are configured separately from the MySQL settings in
+`sql-exercises/.env`. Replace each `REPLACE_ME` value with a local password. The
+`.env` file is ignored by Git and should not be committed.
+
+| Database | Profile | Host port setting | Default port |
+| --- | --- | --- | ---: |
+| PostgreSQL | `postgres` | `POSTGRES_HOST_PORT` | `5432` |
+| Oracle Free | `oracle` | `ORACLE_HOST_PORT` | `1521` |
+
+The host port can be changed if it is already in use; the container port remains
+the database default. Start PostgreSQL with:
+
+```bash
+docker compose --env-file sql-exercises/.env -f sql-exercises/compose.yaml \
+  --profile postgres up -d postgres
+```
+
+Start Oracle Free with:
+
+```bash
+docker compose --env-file sql-exercises/.env -f sql-exercises/compose.yaml \
+  --profile oracle up -d oracle
+```
+
+Stop a profile with `docker compose ... --profile <profile> down`. The current
+`exercises.sql` uses MySQL syntax and must be converted before it can run on
+PostgreSQL or Oracle.

@@ -7,6 +7,7 @@ CREATE DATABASE IF NOT EXISTS school_management;
 USE school_management;
 
 -- Exercise 1.2: Create the courses table
+DROP TABLE IF EXISTS courses;
 CREATE TABLE IF NOT EXISTS courses (
     id INT NOT NULL AUTO_INCREMENT,
     course_name VARCHAR(100) NOT NULL,
