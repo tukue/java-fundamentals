@@ -7,6 +7,7 @@ CREATE DATABASE IF NOT EXISTS school_management;
 USE school_management;
 
 -- Exercise 1.2: Create the courses table
+DROP TABLE IF EXISTS courses;
 CREATE TABLE IF NOT EXISTS courses (
     id INT NOT NULL AUTO_INCREMENT,
     course_name VARCHAR(100) NOT NULL,
@@ -74,9 +75,16 @@ INSERT INTO attendance (student_id, attendance_date, status)
 VALUES
     (1, '2025-01-06', 'Present'),
     (1, '2025-01-08', 'Present'),
+    (1, '2025-01-09', 'Present'),
+    (1, '2025-01-10', 'Present'),
     (2, '2025-01-06', 'Present'),
     (2, '2025-01-07', 'Present'),
-    (3, '2025-01-06', 'Present');
+    (2, '2025-01-09', 'Present'),
+    (2, '2025-01-10', 'Present'),
+    (3, '2025-01-06', 'Present'),
+    (3, '2025-01-08', 'Present'),
+    (3, '2025-01-09', 'Present'),
+    (3, '2025-01-10', 'Present');
 
 -- 3. DQL: Data Query Language
 -- Exercise 3.1: Select every student column
